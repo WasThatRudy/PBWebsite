@@ -4,6 +4,7 @@ import Confetti from 'react-confetti';
 import { useMeasure } from 'react-use';
 import confetti from 'canvas-confetti';
 import { animate } from 'framer-motion';
+import Image from 'next/image'
 
 const CountUpNumber = ({ value }: { value: number }) => {
     const [count, setCount] = useState(0);
@@ -80,24 +81,19 @@ const GSoCCard = ({ mentees = 13, mentors = 3 }: GSoCCardProps) => {
             <div className="relative z-10 px-6 sm:px-8 lg:px-12 xl:px-16 py-4 lg:py-6 text-center">
                 {/* Logo/Header */}
                 <div className="flex flex-wrap items-center justify-center gap-x-2 lg:gap-x-3 gap-y-1 lg:gap-y-2 mb-3 lg:mb-5 xl:mb-6">
-                    <span className="text-3xl sm:text-4xl lg:text-4xl xl:text-5xl font-extrabold tracking-tight">
-                        <span style={{ color: '#00FF66' }}>Point</span>
-                        <span className="text-white ml-2">Blank</span>
-                    </span>
-                    <span className="italic text-2xl sm:text-4xl lg:text-4xl xl:text-5xl font-semibold text-white ml-2 lg:ml-3">dominates</span>
+                    <span className="italic text-1xl sm:text-3xl lg:text-3xl xl:text-4xl font-semibold text-white ml-2 lg:ml-3">Point Blank dominates</span>
                 </div>
 
                 {/* GSoC Branding */}
                 <div className="flex flex-col items-center justify-center gap-1 lg:gap-2 mb-4 lg:mb-6 xl:mb-8">
-                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 lg:w-20 lg:h-20 xl:w-24 xl:h-24">
-                        <div className="absolute inset-0 bg-[#FFB800] blur-2xl opacity-40 rounded-full" />
-                        <svg viewBox="0 0 100 100" className="relative w-full h-full z-10">
-                            <g fill="#FFB800">
-                                <rect x="22" y="22" width="56" height="56" />
-                                <rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" />
-                            </g>
-                            <text x="50" y="59" fontSize="26" fontWeight="900" fill="white" textAnchor="middle" fontFamily="monospace">{"</>"}</text>
-                        </svg>
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 lg:w-20 lg:h-20 xl:w-24 xl:h-24 mx-4">
+                        <Image 
+                            src="/gsoc-logo.PNG"
+                            alt="GSoC Logo"
+                            fill
+                            className="object-contain"
+                            draggable={false}
+                        />
                     </div>
                     <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#FFB800]" style={{ textShadow: '0 0 15px rgba(255,184,0,0.5)' }}>
                         GSoC 2026
@@ -109,24 +105,24 @@ const GSoCCard = ({ mentees = 13, mentors = 3 }: GSoCCardProps) => {
                     <div className="flex flex-col items-center">
                         <span 
                             onClick={triggerConfetti}
-                            className="text-6xl sm:text-8xl lg:text-8xl xl:text-[10rem] font-black text-[#7CFFB2] leading-none cursor-pointer hover:scale-105 transition-transform active:scale-95 select-none"
+                            className="text-6xl sm:text-8xl lg:text-8xl xl:text-[10rem] font-black text-[#66FF33] leading-none cursor-pointer hover:scale-105 transition-transform active:scale-95 select-none"
                             title="Click for a surprise!"
                         >
                             <CountUpNumber value={mentees} />
                         </span>
-                        <span className="text-[#7CFFB2] font-semibold mt-1 lg:mt-2 text-xl sm:text-2xl lg:text-2xl xl:text-3xl">
+                        <span className="text-[#66FF33] font-semibold mt-1 lg:mt-2 text-xl sm:text-2xl lg:text-2xl xl:text-3xl">
                             {mentees === 1 ? "Mentee" : "Mentees"}
                         </span>
                     </div>
                     <div className="flex flex-col items-center">
                         <span 
                             onClick={triggerConfetti}
-                            className="text-6xl sm:text-8xl lg:text-8xl xl:text-[10rem] font-black text-[#7CFFB2] leading-none cursor-pointer hover:scale-105 transition-transform active:scale-95 select-none"
+                            className="text-6xl sm:text-8xl lg:text-8xl xl:text-[10rem] font-black text-[#66FF33] leading-none cursor-pointer hover:scale-105 transition-transform active:scale-95 select-none"
                             title="Click for a surprise!"
                         >
                             <CountUpNumber value={mentors} />
                         </span>
-                        <span className="text-[#7CFFB2] font-semibold mt-1 lg:mt-2 text-xl sm:text-2xl lg:text-2xl xl:text-3xl">
+                        <span className="text-[#66FF33] font-semibold mt-1 lg:mt-2 text-xl sm:text-2xl lg:text-2xl xl:text-3xl">
                             {mentors === 1 ? "Mentor" : "Mentors"}
                         </span>
                     </div>
