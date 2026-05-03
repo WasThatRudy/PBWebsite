@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/ui/Navbar";
-import DotWaveAnimation from "@/components/ui/DotWaveAnimation";
 import AuthInitializer from "@/components/AuthInitializer";
 import { Lexend } from "next/font/google";
+import { GoogleTagManager } from "@next/third-parties/google";
+
 import Footer from "@/components/ui/Footer";
 import { cookies } from "next/headers";
 import verifyAuth from "@/lib/verifyAuth";
@@ -36,6 +37,10 @@ export default async function RootLayout({
 
   return (
     <html lang="en_IN">
+      {process.env.NEXT_PUBLIC_GTM_ID && (
+        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
+      )}
+
       <body className={`bg-pbpages ${lexand.className}`}>
         <AuthInitializer
           authenticated={!!user}
@@ -44,7 +49,7 @@ export default async function RootLayout({
           token={sessionCookie?.value ?? null}
         />
         <ReactLenis root>
-           <ScrollToTop />
+          <ScrollToTop />
           {/* <DotWaveAnimation /> */}
           <div className="relative">
             <Navbar />
