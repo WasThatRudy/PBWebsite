@@ -345,28 +345,38 @@ export async function getOrgBreakdown() {
         totalMergedPRs: 1,
         totalCommits: 1,
         contributors: {
-          $reduce: {
-            input: "$allContributors",
-            initialValue: [],
-            in: { $setUnion: ["$$value", "$$this"] },
+            $ifNull: [
+              {
+                $reduce: {
+                  input: "$allContributors",
+                  initialValue: [],
+                  in: { $setUnion: ["$$value", "$$this"] },
+                },
+              },
+              [],
+            ],
           },
-        },
       },
     },
     {
-      $addFields: {
-        totalContributions: { $add: ["$totalMergedPRs", "$totalCommits"] },
-        contributorCount: {
-          $size: {
-            $reduce: {
-              input: "$allContributors",
-              initialValue: [],
-              in: { $setUnion: ["$$value", "$$this"] },
+        $addFields: {
+          totalContributions: { $add: ["$totalMergedPRs", "$totalCommits"] },
+          contributorCount: {
+            $size: {
+              $ifNull: [
+                {
+                  $reduce: {
+                    input: "$allContributors",
+                    initialValue: [],
+                    in: { $setUnion: ["$$value", "$$this"] },
+                  },
+                },
+                [],
+              ],
             },
           },
         },
       },
-    },
     { $sort: { totalContributions: -1 } },
   ]);
 
