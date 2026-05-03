@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@mendable/firecrawl-js": "^4.21.0",
+    "@next/third-parties": "^16.2.4",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@types/canvas-confetti": "^1.9.0",

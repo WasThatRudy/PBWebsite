@@ -103,13 +103,15 @@ export default function Footer() {
             © 2026 Point Blank. All Rights Reserved
           </p>
 
+          {/* Spacing for right (justify-between) */}
+          <div className="hidden md:block w-24" />
           {/* Privacy Policy */}
-          <Link
+          {/* <Link
             href="/privacy"
             className="text-white/70 text-sm hover:text-white transition-colors text-center"
           >
             Privacy Policy
-          </Link>
+          </Link> */}
         </div>
       </div>
     </footer>
