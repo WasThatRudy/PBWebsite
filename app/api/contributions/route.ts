@@ -4,7 +4,7 @@ import {
   getGlobalStats,
   getContributorStats,
 } from "@/lib/server/contributions";
-import type { OrgTag } from "@/lib/data/program-orgs";
+import type { OrgTag } from "@/lib/data/orgs";
 
 const VALID_TAGS = new Set<OrgTag>(["gsoc", "lfx", "both", "none"]);
 

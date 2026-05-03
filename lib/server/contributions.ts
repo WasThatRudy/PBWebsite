@@ -21,11 +21,13 @@ const octokit = new OctokitWithPlugins({
     },
   },
 });
+
 const STAR_THRESHOLD = parseInt(process.env.GITHUB_STAR_THRESHOLD || "100", 10);
 
 const GITHUB_USERNAMES = process.env.GITHUB_USERNAMES
   ? process.env.GITHUB_USERNAMES.split(",").map((u) => u.trim())
   : [];
+
 
 interface RepoDetails {
   full_name: string;
@@ -72,10 +74,11 @@ async function getRepoDetails(repoFullName: string): Promise<RepoDetails | null>
     throw err;
   }
 }
+
+
 function isQualityRepo(repo: RepoDetails, authorUsername: string): boolean {
   if (repo.owner.type !== "Organization") return false;
   if (repo.private) return false;
-  if (repo.fork) return false;
   if (repo.stargazers_count < STAR_THRESHOLD) return false;
   if (repo.owner.login.toLowerCase() === authorUsername.toLowerCase()) return false;
   return true;
@@ -84,36 +87,50 @@ function isQualityRepo(repo: RepoDetails, authorUsername: string): boolean {
 async function fetchMergedPRs(username: string): Promise<ContributionData[]> {
   console.log(`[Scraper] Fetching merged PRs for: ${username}`);
   const results: ContributionData[] = [];
+  const seenUrls = new Set<string>();
 
-  const iterator = octokit.paginate.iterator(
-    octokit.rest.search.issuesAndPullRequests,
-    {
-      q: `author:${username} type:pr is:merged is:public`,
-      sort: "created",
-      order: "desc",
-      per_page: 100,
-    }
-  );
+  // Split into yearly windows from 2015 to current year to avoid the 1k cap
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 2017 }, (_, i) => 2018 + i);
 
-  for await (const page of iterator) {
-    for (const pr of page.data) {
-      const repoFullName = pr.repository_url.replace("https://api.github.com/repos/", "");
-      const repo = await getRepoDetails(repoFullName);
-      if (!repo || !isQualityRepo(repo, username)) continue;
+  for (const year of years) {
+    const from = `${year}-01-01`;
+    const to   = `${year}-12-31`;
 
-      results.push({
-        username,
-        repoFullName,
-        repoStars: repo.stargazers_count,
-        orgLogin: repo.owner.login,
-        orgAvatarUrl: repo.owner.avatar_url,
-        type: "pr",
-        title: pr.title,
-        url: pr.html_url,
-        isMerged: true,
-        mergedAt: pr.pull_request?.merged_at ?? null,
-        committedAt: null,
-      });
+    const iterator = octokit.paginate.iterator(
+      octokit.rest.search.issuesAndPullRequests,
+      {
+        q: `author:${username} type:pr is:merged is:public merged:${from}..${to}`,
+        sort: "created",
+        order: "desc",
+        per_page: 100,
+      }
+    );
+
+    for await (const page of iterator) {
+      for (const pr of page.data) {
+        if (seenUrls.has(pr.html_url)) continue;
+        seenUrls.add(pr.html_url);
+
+        const repoFullName = pr.repository_url.replace("https://api.github.com/repos/", "");
+        const repo = await getRepoDetails(repoFullName);
+        if (!repo || !isQualityRepo(repo, username)) continue;
+        const mergedAt = pr.pull_request?.merged_at ?? null;
+
+        results.push({
+          username,
+          repoFullName,
+          repoStars: repo.stargazers_count,
+          orgLogin: repo.owner.login,
+          orgAvatarUrl: repo.owner.avatar_url,
+          type: "pr",
+          title: pr.title,
+          url: pr.html_url,
+          isMerged: mergedAt !== null,
+          mergedAt,
+          committedAt: null,
+        });
+      }
     }
   }
 
@@ -121,40 +138,82 @@ async function fetchMergedPRs(username: string): Promise<ContributionData[]> {
   return results;
 }
 
-async function fetchCommits(username: string): Promise<ContributionData[]> {
-  console.log(`[Scraper] Fetching commits for: ${username}`);
-  const results: ContributionData[] = [];
+const orgRepoCache = new Map<string, RepoDetails[]>();
 
-  const iterator = octokit.paginate.iterator(
-    octokit.rest.search.commits,
-    {
-      q: `author:${username} is:public`,
-      sort: "committer-date",
-      order: "desc",
-      per_page: 100,
-    }
-  );
+async function getQualifyingOrgRepos(orgLogin: string): Promise<RepoDetails[]> {
+  if (orgRepoCache.has(orgLogin)) return orgRepoCache.get(orgLogin)!;
+
+  const repos: RepoDetails[] = [];
+
+  const iterator = octokit.paginate.iterator(octokit.rest.repos.listForOrg, {
+    org: orgLogin,
+    type: "public",
+    per_page: 100,
+  });
 
   for await (const page of iterator) {
-    for (const commit of page.data) {
-      const repoFullName = commit.repository.full_name;
-      const repo = await getRepoDetails(repoFullName);
-      if (!repo || !isQualityRepo(repo, username)) continue;
+    for (const repo of page.data) {
+      if (repo.stargazers_count >= STAR_THRESHOLD) {
+        const details = repo as unknown as RepoDetails;
+        repoCache.set(repo.full_name, details);
+        repos.push(details);
+      }
+    }
+  }
 
-      results.push({
-        username,
-        repoFullName,
-        repoStars: repo.stargazers_count,
-        orgLogin: repo.owner.login,
-        orgAvatarUrl: repo.owner.avatar_url,
-        type: "commit",
-        // Commit message can be multiline — take the first line only
-        title: commit.commit.message.split("\n")[0],
-        url: commit.html_url,
-        isMerged: null,
-        mergedAt: null,
-        committedAt: commit.commit.committer?.date ?? null,
-      });
+  orgRepoCache.set(orgLogin, repos);
+  return repos;
+}
+
+async function fetchCommits(
+  username: string,
+  orgLoginsFromPRs: string[]
+): Promise<ContributionData[]> {
+  console.log(`[Scraper] Fetching commits for: ${username}`);
+  const results: ContributionData[] = [];
+  const seenUrls = new Set<string>();
+
+  // Also include orgs already stored in DB from previous runs
+  const dbOrgs = await Contribution.distinct("orgLogin", { username });
+  const orgLogins = [...new Set([...orgLoginsFromPRs, ...dbOrgs])] as string[];
+
+  for (const orgLogin of orgLogins) {
+    const repos = await getQualifyingOrgRepos(orgLogin);
+
+    for (const repo of repos) {
+      try {
+        const iterator = octokit.paginate.iterator(octokit.rest.repos.listCommits, {
+          owner: repo.owner.login,
+          repo:  repo.full_name.split("/")[1],
+          author: username,
+          per_page: 100,
+        });
+
+        for await (const page of iterator) {
+          for (const commit of page.data) {
+            const url = commit.html_url;
+            if (seenUrls.has(url)) continue;
+            seenUrls.add(url);
+
+            results.push({
+              username,
+              repoFullName:  repo.full_name,
+              repoStars:     repo.stargazers_count,
+              orgLogin:      repo.owner.login,
+              orgAvatarUrl:  repo.owner.avatar_url,
+              type:          "commit",
+              title:         commit.commit.message.split("\n")[0],
+              url,
+              isMerged:      null,
+              mergedAt:      null,
+              committedAt:   commit.commit.committer?.date ?? null,
+            });
+          }
+        }
+      } catch (err: any) {
+        if (err.status === 404 || err.status === 409) continue;
+        throw err;
+      }
     }
   }
 
@@ -162,15 +221,16 @@ async function fetchCommits(username: string): Promise<ContributionData[]> {
   return results;
 }
 
+// ─── Save to DB ───────────────────────────────────────────────────────────────
+
 async function saveToDB(contributions: ContributionData[]): Promise<void> {
-  // Upsert orgs first (contributions reference them by orgLogin)
   const orgsMap = new Map<string, { login: string; avatarUrl: string; htmlUrl: string }>();
   for (const c of contributions) {
     if (!orgsMap.has(c.orgLogin)) {
       orgsMap.set(c.orgLogin, {
-        login: c.orgLogin,
+        login:    c.orgLogin,
         avatarUrl: c.orgAvatarUrl,
-        htmlUrl: `https://github.com/${c.orgLogin}`,
+        htmlUrl:  `https://github.com/${c.orgLogin}`,
       });
     }
   }
@@ -179,7 +239,7 @@ async function saveToDB(contributions: ContributionData[]): Promise<void> {
     await Org.findOneAndUpdate(
       { login: org.login },
       { ...org, lastFetched: new Date() },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: "after" }
     );
   }
 
@@ -199,7 +259,7 @@ async function saveToDB(contributions: ContributionData[]): Promise<void> {
         committedAt:  c.committedAt,
         scrapedAt:    new Date(),
       },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: "after" }
     );
   }
 
@@ -214,6 +274,7 @@ export async function runScrapeJob(): Promise<{ totalPRs: number; totalCommits: 
   }
 
   repoCache.clear();
+  orgRepoCache.clear();
 
   console.log(`[Job] Scraping ${GITHUB_USERNAMES.length} users: ${GITHUB_USERNAMES.join(", ")}`);
 
@@ -222,15 +283,16 @@ export async function runScrapeJob(): Promise<{ totalPRs: number; totalCommits: 
 
   for (const username of GITHUB_USERNAMES) {
     try {
-      const [prs, commits] = await Promise.all([
-        fetchMergedPRs(username),
-        fetchCommits(username),
-      ]);
+ 
+      const prs = await fetchMergedPRs(username);
+      const orgLoginsFromPRs = [...new Set(prs.map((p) => p.orgLogin))];
+
+      const commits = await fetchCommits(username, orgLoginsFromPRs);
 
       const all = [...prs, ...commits];
       if (all.length > 0) await saveToDB(all);
 
-      totalPRs += prs.length;
+      totalPRs     += prs.length;
       totalCommits += commits.length;
     } catch (err: any) {
       console.error(`[Job] Failed for ${username}:`, err.message);
@@ -240,6 +302,7 @@ export async function runScrapeJob(): Promise<{ totalPRs: number; totalCommits: 
   console.log(`[Job] Done — PRs: ${totalPRs}, Commits: ${totalCommits}`);
   return { totalPRs, totalCommits, users: GITHUB_USERNAMES.length };
 }
+
 
 export async function getOrgBreakdown() {
   await connectDB();
@@ -293,17 +356,20 @@ export async function getOrgBreakdown() {
     {
       $addFields: {
         totalContributions: { $add: ["$totalMergedPRs", "$totalCommits"] },
-        contributorCount: { $size: {
-          $reduce: {
-            input: "$allContributors",
-            initialValue: [],
-            in: { $setUnion: ["$$value", "$$this"] },
+        contributorCount: {
+          $size: {
+            $reduce: {
+              input: "$allContributors",
+              initialValue: [],
+              in: { $setUnion: ["$$value", "$$this"] },
+            },
           },
-        }},
+        },
       },
     },
     { $sort: { totalContributions: -1 } },
   ]);
+
   return orgs.map((org: any) => ({
     ...org,
     tag: getOrgTag(org.orgLogin),
@@ -317,9 +383,9 @@ export async function getGlobalStats() {
     {
       $group: {
         _id: null,
-        totalMergedPRs:   { $sum: { $cond: [{ $eq: ["$type", "pr"] }, 1, 0] } },
-        totalCommits:     { $sum: { $cond: [{ $eq: ["$type", "commit"] }, 1, 0] } },
-        uniqueOrgs:       { $addToSet: "$orgLogin" },
+        totalMergedPRs:     { $sum: { $cond: [{ $eq: ["$type", "pr"] }, 1, 0] } },
+        totalCommits:       { $sum: { $cond: [{ $eq: ["$type", "commit"] }, 1, 0] } },
+        uniqueOrgs:         { $addToSet: "$orgLogin" },
         uniqueContributors: { $addToSet: "$username" },
       },
     },
@@ -329,8 +395,8 @@ export async function getGlobalStats() {
         totalMergedPRs: 1,
         totalCommits: 1,
         totalContributions: { $add: ["$totalMergedPRs", "$totalCommits"] },
-        totalOrgs:         { $size: "$uniqueOrgs" },
-        totalContributors: { $size: "$uniqueContributors" },
+        totalOrgs:          { $size: "$uniqueOrgs" },
+        totalContributors:  { $size: "$uniqueContributors" },
       },
     },
   ]);
