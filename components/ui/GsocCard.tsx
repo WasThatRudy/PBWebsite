@@ -88,7 +88,7 @@ const GSoCCard = ({ mentees = 13, mentors = 3 }: GSoCCardProps) => {
                 <div className="flex flex-col items-center justify-center gap-1 lg:gap-2 mb-4 lg:mb-6 xl:mb-8">
                     <div className="relative w-16 h-16 sm:w-20 sm:h-20 lg:w-20 lg:h-20 xl:w-24 xl:h-24 mx-4">
                         <Image 
-                            src="/gsoc-logo.PNG"
+                            src="/images/icons/gsoc-logo.webp"
                             alt="GSoC Logo"
                             fill
                             className="object-contain"
