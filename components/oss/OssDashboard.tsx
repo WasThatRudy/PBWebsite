@@ -98,18 +98,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
   }, [contributorStats, contributorSort, query]);
 
   if (status === "loading") {
-    return (
-      <div className="bg-pbpages px-3 pb-12 pt-8 font-medium text-zinc-300 sm:px-4 sm:pb-20 sm:pt-12">
-        <div className="mx-auto flex w-full max-w-[1700px] justify-center sm:px-6 lg:px-10 xl:px-[80px]">
-          <div className="flex w-full max-w-md flex-col items-center rounded-[20px] bg-[#1c1c1c] px-4 py-8 text-center shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:rounded-[28px] sm:px-8 sm:py-10">
-            <OssPointBlankLoader
-              message="Fetching Contributions"
-              subtext="Pulling the latest open source stats for Point Blank."
-            />
-          </div>
-        </div>
-      </div>
-    );
+    return <OssPointBlankLoader />;
   }
 
   if (status === "error") {

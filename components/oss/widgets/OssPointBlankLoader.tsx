@@ -2,11 +2,11 @@ export default function OssPointBlankLoader({
   message,
   subtext,
 }: {
-  message: string;
-  subtext: string;
+  message?: string;
+  subtext?: string;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 text-center">
+    <div className="relative flex min-h-screen items-center justify-center">
       <svg className="h-15 w-30" viewBox="0 0 120 60" aria-hidden="true">
         <path
           className="fill-none stroke-pbgreen stroke-5 animate-[draw_1.5s_ease-in-out_infinite]"
@@ -40,14 +40,20 @@ export default function OssPointBlankLoader({
         />
       </svg>
 
-      <div className="space-y-2">
-        <p className="text-sm font-medium uppercase tracking-[0.22em] text-white sm:text-base">
-          {message}
-        </p>
-        <p className="max-w-sm text-sm font-medium leading-relaxed text-zinc-500">
-          {subtext}
-        </p>
-      </div>
+      {(message || subtext) && (
+        <div className="absolute top-[calc(50%+3.5rem)] space-y-2 text-center">
+          {message && (
+            <p className="text-sm font-medium uppercase tracking-[0.22em] text-white sm:text-base">
+              {message}
+            </p>
+          )}
+          {subtext && (
+            <p className="max-w-sm text-sm font-medium leading-relaxed text-zinc-500">
+              {subtext}
+            </p>
+          )}
+        </div>
+      )}
 
       <style jsx>{`
         @keyframes draw {
