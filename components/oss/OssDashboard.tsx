@@ -391,8 +391,8 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
 
   return (
     <div className="min-h-screen bg-pbpages text-zinc-300 selection:bg-[#00FF41]/30 selection:text-white font-medium">
-      <main className="mx-auto w-full max-w-[1700px] px-4 py-10 sm:px-6 md:py-10 lg:px-10 xl:px-[80px]">
-        <div className="px-2 pb-10 pt-6 text-center flex flex-col items-center sm:px-4 sm:pt-8 sm:pb-12">
+      <main className="mx-auto w-full max-w-[1700px] px-2 py-10 sm:px-5 md:py-10 lg:px-10 xl:px-[80px]">
+        <div className="px-1 pb-10 pt-6 text-center flex flex-col items-center sm:px-3 sm:pt-8 sm:pb-12">
           <motion.h1
             initial={{ opacity: 0, y: 8, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -439,8 +439,8 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
 
           {activeTab === "dashboard" && (
             <div className="space-y-10">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="flex flex-col p-6 rounded-[20px] bg-[#1c1c1c] border border-transparent hover:border-[#39FF14] transition-colors min-h-[160px]">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
+                <div className="flex min-h-[160px] flex-col rounded-[20px] border border-transparent bg-[#1c1c1c] p-5 transition-colors hover:border-[#39FF14] sm:p-6">
                   <div className="mb-6 flex items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center rounded-[18px]">
                       <PrStatIcon />
@@ -454,7 +454,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                   </div>
                 </div>
 
-                <div className="flex flex-col p-6 rounded-[20px] bg-[#1c1c1c] border border-transparent hover:border-[#39FF14] transition-colors min-h-[160px]">
+                <div className="flex min-h-[160px] flex-col rounded-[20px] border border-transparent bg-[#1c1c1c] p-5 transition-colors hover:border-[#39FF14] sm:p-6">
                   <div className="mb-6 flex items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center rounded-[18px]">
                       <OrgStatIcon />
@@ -468,7 +468,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                   </div>
                 </div>
 
-                <div className="flex flex-col p-6 rounded-[20px] bg-[#1c1c1c] border border-transparent hover:border-[#39FF14] transition-colors min-h-[160px]">
+                <div className="flex min-h-[160px] flex-col rounded-[20px] border border-transparent bg-[#1c1c1c] p-5 transition-colors hover:border-[#39FF14] sm:p-6">
                   <div className="mb-6 flex items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center rounded-[18px]">
                       <ContributorStatIcon />
@@ -607,7 +607,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       className="bg-[#111111] border border-transparent hover:border-[#39FF14] focus:border-[#39FF14] text-white rounded-full outline-none px-6 py-3 text-sm transition-colors w-full font-medium"
                     />
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                  <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-end">
                     {ORGANIZATION_SORT_OPTIONS.map((option) => (
                       <button
                         key={option.id}
@@ -626,7 +626,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                 </div>
               </div>
 
-              <div className="mb-6 flex flex-wrap items-center gap-2">
+              <div className="mb-6 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
                 {ORGANIZATION_TAG_OPTIONS.map((option) => (
                   <button
                     key={option.id}
@@ -650,11 +650,11 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {filteredAndSortedOrganizations.map((organization) => (
                     <div
                       key={organization.id}
-                      className="flex flex-col p-6 rounded-[20px] bg-[#1c1c1c] border border-transparent hover:border-[#39FF14] transition-colors shadow-lg"
+                      className="flex flex-col rounded-[20px] border border-transparent bg-[#1c1c1c] p-5 shadow-lg transition-colors hover:border-[#39FF14] sm:p-6"
                     >
                       <div className="flex justify-between items-start mb-6 gap-4">
                         <div>
@@ -744,7 +744,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       className="bg-[#111111] border border-transparent hover:border-[#39FF14] focus:border-[#39FF14] text-white rounded-full outline-none px-6 py-3 text-sm transition-colors w-full font-medium"
                     />
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                  <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-end">
                     {CONTRIBUTOR_SORT_OPTIONS.map((option) => (
                       <button
                         key={option.id}
