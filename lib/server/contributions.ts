@@ -154,7 +154,7 @@ async function getQualifyingOrgRepos(orgLogin: string): Promise<RepoDetails[]> {
 
   for await (const page of iterator) {
     for (const repo of page.data) {
-      if (repo.stargazers_count >= STAR_THRESHOLD) {
+        if ((repo.stargazers_count ?? 0) >= STAR_THRESHOLD) {
         const details = repo as unknown as RepoDetails;
         repoCache.set(repo.full_name, details);
         repos.push(details);
