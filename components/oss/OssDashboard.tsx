@@ -348,8 +348,8 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
 
   if (status === "loading") {
     return (
-      <div className="bg-pbpages px-4 pb-16 pt-8 text-zinc-300 sm:pb-20 sm:pt-12">
-        <div className="mx-auto flex w-full max-w-[1700px] items-start justify-center sm:px-6 lg:px-10 xl:px-[80px]">
+      <div className="min-h-screen bg-pbpages px-4 text-zinc-300">
+        <div className="mx-auto flex min-h-screen w-full max-w-[1700px] items-center justify-center py-16 sm:px-6 lg:px-10 xl:px-[80px]">
           <div className="flex w-full max-w-md flex-col items-center rounded-[28px] border border-white/6 bg-[#1c1c1c] px-6 py-10 text-center sm:px-8">
             <div className="mb-5 h-12 w-12 animate-spin rounded-full border-2 border-[#39FF14]/25 border-t-[#39FF14]" />
             <h2 className="text-balance text-lg font-medium uppercase tracking-[0.18em] text-zinc-300 sm:text-xl sm:tracking-[0.3em]">
@@ -366,8 +366,8 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
 
   if (status === "error") {
     return (
-      <div className="bg-pbpages px-4 pb-16 pt-8 text-zinc-300 font-medium sm:pb-20 sm:pt-12">
-        <div className="mx-auto flex w-full max-w-[1700px] items-start justify-center sm:px-6 lg:px-10 xl:px-[80px]">
+      <div className="min-h-screen bg-pbpages px-4 text-zinc-300 font-medium">
+        <div className="mx-auto flex min-h-screen w-full max-w-[1700px] items-center justify-center py-16 sm:px-6 lg:px-10 xl:px-[80px]">
           <div className="flex w-full max-w-lg flex-col items-center rounded-[28px] border border-red-400/10 bg-[#1c1c1c] px-6 py-10 text-center sm:px-8">
             <div className="mb-4 text-red-300">
               <h2 className="text-2xl font-medium text-white text-center">
@@ -508,7 +508,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                           key={organization.id}
                           className="w-full rounded-[20px] border border-transparent bg-[#1c1c1c] p-5 transition-colors hover:border-[#39FF14]"
                         >
-                          <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
                             <div className="min-w-0">
                               <span className="block break-words font-medium text-lg text-white">
                                 {organization.name}
@@ -526,7 +526,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                 )}
                               </p>
                             </div>
-                            <div className="justify-self-start rounded-full bg-[#00FF41]/10 px-4 py-2 text-sm font-medium text-[#00FF41] sm:justify-self-auto">
+                            <div className="rounded-full bg-[#00FF41]/10 px-4 py-2 text-sm font-medium text-[#00FF41]">
                               {organization.totalContributions} Total
                             </div>
                           </div>
@@ -560,7 +560,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                           key={contributor.id}
                           className="w-full rounded-[20px] border border-transparent bg-[#1c1c1c] p-5 transition-colors hover:border-[#39FF14]"
                         >
-                          <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
                             <div className="min-w-0 text-left">
                               <span className="block break-words font-medium text-lg leading-tight text-white">
                                 {contributor.name}
@@ -578,7 +578,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                 )}
                               </p>
                             </div>
-                            <div className="justify-self-start rounded-full bg-[#00FF41]/10 px-4 py-2 text-sm font-medium text-[#00FF41] sm:justify-self-auto">
+                            <div className="rounded-full bg-[#00FF41]/10 px-4 py-2 text-sm font-medium text-[#00FF41]">
                               {contributor.totalContributions} Total
                             </div>
                           </div>
