@@ -6,9 +6,14 @@ import { runScrapeJob } from "@/lib/server/contributions";
  * POST /api/contributions/scrape
  *
  * Triggers the GitHub scrape job in the background.
+ * Requires ?key=<SCRAPE_SECRET> query param for authorization.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function POST(_req: NextRequest) {
+export async function POST(req: NextRequest) {
+  const key = req.nextUrl.searchParams.get("key");
+  if (!key || key !== process.env.SCRAPE_SECRET) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const resultPromise = runScrapeJob();
 
