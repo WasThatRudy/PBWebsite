@@ -10,6 +10,7 @@ const lexendTera = Lexend_Tera({
 
 const footerLinks = [
   { name: "Events", href: "/events" },
+  { name: "OSS", href: "/oss" },
   { name: "Members", href: "/members" },
   { name: "Achievements", href: "/achievements" },
   { name: "Lore", href: "/lore" },

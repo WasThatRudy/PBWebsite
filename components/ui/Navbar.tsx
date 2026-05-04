@@ -197,6 +197,10 @@ export default function Navbar() {
       href: "/events",
     },
     {
+      name: "OSS",
+      href: "/oss",
+    },
+    {
       name: "Members",
       href: "/members",
     },
