@@ -4,6 +4,7 @@ import {
   contributorLabel,
   formatContributionMeta,
   formatTagLabel,
+  getOrganizationGithubUrl,
 } from "@/components/oss/utils";
 
 export default function OssOrganizationCard({
@@ -11,6 +12,11 @@ export default function OssOrganizationCard({
 }: {
   organization: OrganizationView;
 }) {
+  const organizationUrl = getOrganizationGithubUrl(
+    organization.name,
+    organization.url,
+  );
+
   return (
     <div className="flex flex-col rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5 md:p-6">
       <div className="mb-4 flex flex-col gap-3 sm:mb-6">
@@ -19,9 +25,14 @@ export default function OssOrganizationCard({
             {organization.name}
           </h3>
           {organization.url && (
-            <p className="mt-2 break-all pr-1 text-xs text-zinc-500">
+            <a
+              href={organizationUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 block break-all pr-1 text-xs text-zinc-500 transition-colors hover:text-zinc-300"
+            >
               {organization.url}
-            </p>
+            </a>
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
