@@ -53,6 +53,21 @@ export function contributorLabel(contributor: NormalizedOssContributor) {
   return contributor.login ? `@${contributor.login}` : contributor.name;
 }
 
+export function getContributorGithubUrl(
+  contributor: Pick<NormalizedOssContributor, "login" | "url">,
+) {
+  if (contributor.url) return contributor.url;
+  if (!contributor.login) return undefined;
+  return `https://github.com/${contributor.login}`;
+}
+
+export function getOrganizationGithubUrl(name: string, url?: string) {
+  if (url) return url;
+  const trimmedName = name.trim();
+  if (!trimmedName) return undefined;
+  return `https://github.com/${trimmedName}`;
+}
+
 export function buildViewUrl(
   basePath: string,
   view: "stats" | "orgs" | "contributors",

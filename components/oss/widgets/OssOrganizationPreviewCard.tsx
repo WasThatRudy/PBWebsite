@@ -4,6 +4,7 @@ import {
   contributorLabel,
   formatContributionMeta,
   formatTagLabel,
+  getOrganizationGithubUrl,
 } from "@/components/oss/utils";
 
 export default function OssOrganizationPreviewCard({
@@ -11,6 +12,11 @@ export default function OssOrganizationPreviewCard({
 }: {
   organization: OrganizationView;
 }) {
+  const organizationUrl = getOrganizationGithubUrl(
+    organization.name,
+    organization.url,
+  );
+
   return (
     <div className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:min-h-[172px] sm:rounded-[20px] sm:p-5">
       <div className="flex flex-col gap-4">
@@ -19,9 +25,14 @@ export default function OssOrganizationPreviewCard({
             {organization.name}
           </span>
           {organization.url && (
-            <p className="mt-1 break-all pr-1 text-xs text-zinc-500">
+            <a
+              href={organizationUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 block break-all pr-1 text-xs text-zinc-500 transition-colors hover:text-zinc-300"
+            >
               {organization.url}
-            </p>
+            </a>
           )}
           <p className="mt-2 text-xs leading-relaxed text-zinc-500 sm:mt-3 sm:text-sm">
             {formatContributionMeta(
