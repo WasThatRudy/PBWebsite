@@ -592,9 +592,9 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       organizationStats.slice(0, 5).map((organization) => (
                         <div
                           key={organization.id}
-                          className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5"
+                          className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:min-h-[172px] sm:rounded-[20px] sm:p-5"
                         >
-                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:gap-4">
+                          <div className="flex flex-col gap-4">
                             <div className="min-w-0">
                               <span className="block break-words font-medium text-base text-white sm:text-lg">
                                 {organization.name}
@@ -611,8 +611,38 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                 )}
                               </p>
                             </div>
-                            <div className="justify-self-end rounded-full bg-[#39FF14] px-2.5 py-1 text-[11px] font-medium text-black sm:px-3 sm:py-1.5 sm:text-xs">
-                              {organization.totalContributions} Total
+                            <div className="flex min-h-[32px] flex-wrap items-center gap-1.5">
+                              <span
+                                className={`rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.18em] ${tagBadgeClasses(
+                                  organization.tag,
+                                )}`}
+                              >
+                                {formatTagLabel(organization.tag)}
+                              </span>
+                              {organization.contributors.length === 0 ? (
+                                <span className="rounded-full bg-[#111111] px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-300">
+                                  No Contributors
+                                </span>
+                              ) : (
+                                <>
+                                  {organization.contributors
+                                    .slice(0, 2)
+                                    .map((contributor) => (
+                                      <span
+                                        key={contributor.id}
+                                        title={contributorLabel(contributor)}
+                                        className="rounded-full bg-[#111111] px-2.5 py-1 text-xs text-zinc-300"
+                                      >
+                                        {contributorLabel(contributor)}
+                                      </span>
+                                    ))}
+                                  {organization.contributors.length > 2 && (
+                                    <span className="rounded-full bg-[#111111] px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-300">
+                                      +{organization.contributors.length - 2} More
+                                    </span>
+                                  )}
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -643,9 +673,9 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       contributorStats.slice(0, 5).map((contributor) => (
                         <div
                           key={contributor.id}
-                          className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5"
+                          className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:min-h-[172px] sm:rounded-[20px] sm:p-5"
                         >
-                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:gap-4">
+                          <div className="flex flex-col gap-4">
                             <div className="min-w-0 text-left">
                               <span className="block break-words font-medium text-base leading-tight text-white sm:text-lg">
                                 {contributor.name}
@@ -662,8 +692,33 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                 )}
                               </p>
                             </div>
-                            <div className="justify-self-end rounded-full bg-[#39FF14] px-2.5 py-1 text-[11px] font-medium text-black sm:px-3 sm:py-1.5 sm:text-xs">
-                              {contributor.totalContributions} Total
+                            <div className="flex min-h-[32px] flex-wrap items-center gap-1.5">
+                              {contributor.organizations.length === 0 ? (
+                                <span className="inline-flex items-center rounded-full bg-[#111111] px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-300">
+                                  No Orgs Yet
+                                </span>
+                              ) : (
+                                <>
+                                  {contributor.organizations
+                                    .slice(0, 2)
+                                    .map((organization) => (
+                                      <span
+                                        key={organization.id}
+                                        title={organization.name}
+                                        className="inline-flex max-w-[140px] items-center rounded-full bg-[#111111] px-2.5 py-1 text-xs text-zinc-300"
+                                      >
+                                        <span className="truncate">
+                                          {organization.name}
+                                        </span>
+                                      </span>
+                                    ))}
+                                  {contributor.organizations.length > 2 && (
+                                    <span className="inline-flex items-center rounded-full bg-[#111111] px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-300">
+                                      +{contributor.organizations.length - 2} More
+                                    </span>
+                                  )}
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -740,21 +795,16 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       key={organization.id}
                       className="flex flex-col rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5 md:p-6"
                     >
-                      <div className="mb-4 flex flex-col gap-4 sm:mb-6">
-                        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-                          <div className="min-w-0 pr-1">
-                            <h3 className="break-words text-lg font-medium text-white sm:text-xl">
-                              {organization.name}
-                            </h3>
-                            {organization.url && (
-                              <p className="mt-2 break-all pr-1 text-xs text-zinc-500">
-                                {organization.url}
-                              </p>
-                            )}
-                          </div>
-                          <div className="justify-self-end rounded-full bg-[#39FF14] px-2.5 py-1 text-[11px] font-medium tracking-[0.12em] text-black sm:px-3 sm:py-1.5 sm:text-xs">
-                            <span>{organization.totalContributions} Total</span>
-                          </div>
+                      <div className="mb-4 flex flex-col gap-3 sm:mb-6">
+                        <div className="min-w-0">
+                          <h3 className="break-words text-lg font-medium text-white sm:text-xl">
+                            {organization.name}
+                          </h3>
+                          {organization.url && (
+                            <p className="mt-2 break-all pr-1 text-xs text-zinc-500">
+                              {organization.url}
+                            </p>
+                          )}
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
                           <span
@@ -862,31 +912,26 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       className="rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5 md:p-6"
                     >
                       <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">
-                        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:gap-4">
-                          <div className="min-w-0 flex-1">
-                            <h3 className="break-words text-lg font-medium text-white sm:text-xl">
-                              {contributor.name}
-                            </h3>
-                            <p className="mt-1 break-words text-sm text-zinc-500">
-                              {contributor.login
-                                ? `@${contributor.login}`
-                                : "Point Blank contributor"}
-                            </p>
-                            <p className="mt-4 text-sm leading-relaxed text-zinc-400">
-                              {formatContributionMeta(
-                                contributor.prCount,
-                                contributor.commitCount,
-                              )}
-                            </p>
-                            {contributor.bio && (
-                              <p className="mt-4 text-sm leading-relaxed text-zinc-400">
-                                {contributor.bio}
-                              </p>
+                        <div className="min-w-0">
+                          <h3 className="break-words text-lg font-medium text-white sm:text-xl">
+                            {contributor.name}
+                          </h3>
+                          <p className="mt-1 break-words text-sm text-zinc-500">
+                            {contributor.login
+                              ? `@${contributor.login}`
+                              : "Point Blank contributor"}
+                          </p>
+                          <p className="mt-4 text-sm leading-relaxed text-zinc-400">
+                            {formatContributionMeta(
+                              contributor.prCount,
+                              contributor.commitCount,
                             )}
-                          </div>
-                          <div className="justify-self-end rounded-full bg-[#39FF14] px-2.5 py-1 text-xs font-medium text-black sm:px-3 sm:py-1.5 sm:text-sm">
-                            {contributor.totalContributions} Total
-                          </div>
+                          </p>
+                          {contributor.bio && (
+                            <p className="mt-4 text-sm leading-relaxed text-zinc-400">
+                              {contributor.bio}
+                            </p>
+                          )}
                         </div>
 
                         <div className="border-t border-zinc-800/50 pt-4">
