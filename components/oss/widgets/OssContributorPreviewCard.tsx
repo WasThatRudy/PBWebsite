@@ -1,8 +1,7 @@
 import type { ContributorView } from "@/components/oss/types";
-import OssPill from "@/components/oss/elements/OssPill";
+import { Pill } from "@/components/ui/Pill";
 import {
   formatContributionMeta,
-  MUTED_PILL_CLASSNAME,
 } from "@/components/oss/utils";
 
 export default function OssContributorPreviewCard({
@@ -31,27 +30,32 @@ export default function OssContributorPreviewCard({
         </div>
         <div className="flex min-h-[32px] flex-wrap items-center gap-2">
           {contributor.organizations.length === 0 ? (
-            <OssPill
-              className={`${MUTED_PILL_CLASSNAME} text-[11px] font-medium uppercase tracking-[0.14em]`}
+            <Pill
+              className="font-medium uppercase tracking-[0.14em]"
+              size="compact"
+              variant="muted"
             >
               No Orgs Yet
-            </OssPill>
+            </Pill>
           ) : (
             <>
               {contributor.organizations.slice(0, 2).map((organization) => (
-                <OssPill
+                <Pill
                   key={organization.id}
-                  className={`${MUTED_PILL_CLASSNAME} max-w-[140px]`}
+                  className="max-w-[140px]"
+                  variant="muted"
                 >
                   <span className="truncate">{organization.name}</span>
-                </OssPill>
+                </Pill>
               ))}
               {contributor.organizations.length > 2 && (
-                <OssPill
-                  className={`${MUTED_PILL_CLASSNAME} text-[11px] font-medium uppercase tracking-[0.14em]`}
+                <Pill
+                  className="font-medium uppercase tracking-[0.14em]"
+                  size="compact"
+                  variant="muted"
                 >
                   +{contributor.organizations.length - 2} More
-                </OssPill>
+                </Pill>
               )}
             </>
           )}

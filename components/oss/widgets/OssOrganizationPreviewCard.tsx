@@ -1,11 +1,9 @@
 import type { OrganizationView } from "@/components/oss/types";
-import OssPill from "@/components/oss/elements/OssPill";
+import { Pill } from "@/components/ui/Pill";
 import {
   contributorLabel,
   formatContributionMeta,
   formatTagLabel,
-  MUTED_PILL_CLASSNAME,
-  PRIMARY_PILL_CLASSNAME,
 } from "@/components/oss/utils";
 
 export default function OssOrganizationPreviewCard({
@@ -33,29 +31,39 @@ export default function OssOrganizationPreviewCard({
           </p>
         </div>
         <div className="flex min-h-[32px] flex-wrap items-center gap-1.5">
-          <OssPill className={`${PRIMARY_PILL_CLASSNAME} text-[11px] font-medium uppercase tracking-[0.18em]`}>
+          <Pill
+            className="font-medium uppercase tracking-[0.18em]"
+            size="compact"
+            variant="accent"
+          >
             {formatTagLabel(organization.tag)}
-          </OssPill>
+          </Pill>
           {organization.contributors.length === 0 ? (
-            <OssPill className={`${MUTED_PILL_CLASSNAME} text-[11px] font-medium uppercase tracking-[0.14em]`}>
+            <Pill
+              className="font-medium uppercase tracking-[0.14em]"
+              size="compact"
+              variant="muted"
+            >
               No Contributors
-            </OssPill>
+            </Pill>
           ) : (
             <>
               {organization.contributors.slice(0, 2).map((contributor) => (
-                <OssPill
+                <Pill
                   key={contributor.id}
-                  className={`${MUTED_PILL_CLASSNAME}`}
+                  variant="muted"
                 >
                   {contributorLabel(contributor)}
-                </OssPill>
+                </Pill>
               ))}
               {organization.contributors.length > 2 && (
-                <OssPill
-                  className={`${MUTED_PILL_CLASSNAME} text-[11px] font-medium uppercase tracking-[0.14em]`}
+                <Pill
+                  className="font-medium uppercase tracking-[0.14em]"
+                  size="compact"
+                  variant="muted"
                 >
                   +{organization.contributors.length - 2} More
-                </OssPill>
+                </Pill>
               )}
             </>
           )}

@@ -1,15 +1,11 @@
-export default function OssPointBlankLoader({
-  message,
-  subtext,
-}: {
-  message?: string;
-  subtext?: string;
-}) {
+"use client";
+
+export default function LoadingBrackets() {
   return (
     <div className="relative flex min-h-screen items-center justify-center">
       <svg className="h-15 w-30" viewBox="0 0 120 60" aria-hidden="true">
         <path
-          className="fill-none stroke-pbgreen stroke-5 animate-[draw_1.5s_ease-in-out_infinite]"
+          className="fill-none stroke-pbgreen stroke-5 stroke-round animate-[draw_1.5s_ease-in-out_infinite]"
           style={{
             strokeDasharray: 100,
             strokeDashoffset: 100,
@@ -17,8 +13,9 @@ export default function OssPointBlankLoader({
           }}
           d="M40 15 L20 30 L40 45"
         />
+
         <path
-          className="fill-none stroke-pbgreen stroke-5 animate-[draw_1.5s_ease-in-out_infinite]"
+          className="fill-none stroke-pbgreen stroke-5 stroke-round animate-[draw_1.5s_ease-in-out_infinite]"
           style={{
             strokeDasharray: 100,
             strokeDashoffset: 100,
@@ -27,6 +24,7 @@ export default function OssPointBlankLoader({
           }}
           d="M80 15 L100 30 L80 45"
         />
+
         <circle
           className="fill-pbgreen animate-[pop_1.5s_infinite]"
           style={{
@@ -39,21 +37,6 @@ export default function OssPointBlankLoader({
           r="4"
         />
       </svg>
-
-      {(message || subtext) && (
-        <div className="absolute top-[calc(50%+3.5rem)] space-y-2 text-center">
-          {message && (
-            <p className="text-sm font-medium uppercase tracking-[0.22em] text-white sm:text-base">
-              {message}
-            </p>
-          )}
-          {subtext && (
-            <p className="max-w-sm text-sm font-medium leading-relaxed text-zinc-500">
-              {subtext}
-            </p>
-          )}
-        </div>
-      )}
 
       <style jsx>{`
         @keyframes draw {

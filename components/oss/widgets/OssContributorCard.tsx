@@ -1,8 +1,7 @@
 import type { ContributorView } from "@/components/oss/types";
-import OssPill from "@/components/oss/elements/OssPill";
+import { Pill } from "@/components/ui/Pill";
 import {
   formatContributionMeta,
-  MUTED_PILL_CLASSNAME,
 } from "@/components/oss/utils";
 
 export default function OssContributorCard({
@@ -44,12 +43,13 @@ export default function OssContributorCard({
               <span className="text-xs text-zinc-600">No orgs yet</span>
             ) : (
               contributor.organizations.map((organization) => (
-                <OssPill
+                <Pill
                   key={organization.id}
-                  className={`${MUTED_PILL_CLASSNAME} max-w-[160px]`}
+                  className="max-w-[160px]"
+                  variant="muted"
                 >
                   <span className="truncate">{organization.name}</span>
-                </OssPill>
+                </Pill>
               ))
             )}
           </div>

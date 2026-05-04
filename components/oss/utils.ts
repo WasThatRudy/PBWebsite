@@ -44,12 +44,6 @@ export const ORGANIZATION_TAG_OPTIONS: Array<{
   { id: "none", label: "None" },
 ];
 
-export const PRIMARY_PILL_CLASSNAME =
-  "bg-[#39FF14] text-black";
-
-export const MUTED_PILL_CLASSNAME =
-  "bg-[#111111] text-zinc-300";
-
 export function matchSearch(values: Array<string | undefined>, query: string) {
   if (!query) return true;
   return values.some((value) => value?.toLowerCase().includes(query));

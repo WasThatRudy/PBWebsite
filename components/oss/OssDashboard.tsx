@@ -3,13 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLoadingStore } from "@/lib/store/loading";
 import { useOssDashboardData } from "@/hooks/useOssDashboardData";
-import OssTabButton from "@/components/oss/elements/OssTabButton";
-import OssPointBlankLoader from "@/components/oss/widgets/OssPointBlankLoader";
 import OssHero from "@/components/oss/modules/OssHero";
 import OssOverviewSection from "@/components/oss/modules/OssOverviewSection";
 import OssHighlightsSection from "@/components/oss/modules/OssHighlightsSection";
 import OssOrganizationsPanel from "@/components/oss/modules/OssOrganizationsPanel";
 import OssContributorsPanel from "@/components/oss/modules/OssContributorsPanel";
+import LoadingBrackets from "@/components/ui/LoadingBrackets";
+import { Button } from "@/components/ui/button";
 import type {
   ContributorSortOptionId,
   DashboardTab,
@@ -98,13 +98,13 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
   }, [contributorStats, contributorSort, query]);
 
   if (status === "loading") {
-    return <OssPointBlankLoader />;
+    return <LoadingBrackets />;
   }
 
   if (status === "error") {
     return (
-      <div className="bg-pbpages px-3 pb-12 pt-6 font-medium text-zinc-300 sm:px-4 sm:pb-20 sm:pt-12">
-        <div className="mx-auto flex w-full max-w-[1700px] items-start justify-center sm:px-6 lg:px-10 xl:px-[80px]">
+      <div className="min-h-screen bg-pbpages px-3 py-6 font-medium text-zinc-300 sm:px-4 sm:py-12">
+        <div className="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-[1700px] items-center justify-center sm:min-h-[calc(100vh-11rem)] sm:px-6 lg:px-10 xl:px-[80px]">
           <div className="flex w-full max-w-lg flex-col items-center rounded-[20px] border border-red-400/10 bg-[#1c1c1c] px-4 py-8 text-center shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:rounded-[28px] sm:px-8 sm:py-10">
             <div className="mb-4 text-red-300">
               <h2 className="text-center text-2xl font-medium text-white">
@@ -133,15 +133,18 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
 
         <div className="mb-8 grid grid-cols-3 gap-2 sm:mb-10 sm:flex sm:flex-wrap sm:items-center sm:justify-center">
           {TABS.map((tab) => (
-            <OssTabButton
+            <Button
               key={tab.id}
-              active={activeTab === tab.id}
-              label={tab.label}
+              size="pill"
+              variant={activeTab === tab.id ? "success" : "surface"}
               onClick={() => {
                 setActiveTab(tab.id);
                 setSearchQuery("");
               }}
-            />
+              className="w-full px-3 py-2 text-[10px] tracking-[0.08em] sm:min-w-[170px] sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm sm:tracking-[0.18em] md:px-7 md:text-base"
+            >
+              {tab.label}
+            </Button>
           ))}
         </div>
 

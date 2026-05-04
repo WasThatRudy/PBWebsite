@@ -1,11 +1,9 @@
 import type { OrganizationView } from "@/components/oss/types";
-import OssPill from "@/components/oss/elements/OssPill";
+import { Pill } from "@/components/ui/Pill";
 import {
   contributorLabel,
   formatContributionMeta,
   formatTagLabel,
-  MUTED_PILL_CLASSNAME,
-  PRIMARY_PILL_CLASSNAME,
 } from "@/components/oss/utils";
 
 export default function OssOrganizationCard({
@@ -27,9 +25,13 @@ export default function OssOrganizationCard({
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <OssPill className={`${PRIMARY_PILL_CLASSNAME} text-[11px] font-medium uppercase tracking-[0.18em]`}>
+          <Pill
+            className="font-medium uppercase tracking-[0.18em]"
+            size="compact"
+            variant="accent"
+          >
             {formatTagLabel(organization.tag)}
-          </OssPill>
+          </Pill>
           <span className="text-xs text-zinc-500">
             {organization.commitCount} commits
           </span>
@@ -58,12 +60,12 @@ export default function OssOrganizationCard({
             <span className="text-xs text-zinc-600">No active contributors</span>
           ) : (
             organization.contributors.map((contributor) => (
-              <OssPill
+              <Pill
                 key={contributor.id}
-                className={`${MUTED_PILL_CLASSNAME}`}
+                variant="muted"
               >
                 {contributorLabel(contributor)}
-              </OssPill>
+              </Pill>
             ))
           )}
         </div>
