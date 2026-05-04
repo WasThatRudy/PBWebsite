@@ -348,8 +348,8 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
 
   if (status === "loading") {
     return (
-      <div className="bg-pbpages px-3 pb-12 pt-6 text-zinc-300 sm:px-4 sm:pb-20 sm:pt-12">
-        <div className="mx-auto flex w-full max-w-[1700px] items-start justify-center sm:px-6 lg:px-10 xl:px-[80px]">
+      <div className="bg-pbpages px-3 pb-12 pt-6 text-zinc-300 sm:px-4 sm:pb-20 sm:pt-12 min-h-[70vh] flex items-center justify-center">
+        <div className="mx-auto flex w-full max-w-[1700px] items-center justify-center sm:px-6 lg:px-10 xl:px-[80px]">
           <div className="flex w-full max-w-md flex-col items-center rounded-[20px] border border-white/6 bg-[#1c1c1c] px-4 py-8 text-center sm:rounded-[28px] sm:px-8 sm:py-10">
             <div className="mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[#39FF14]/25 border-t-[#39FF14] sm:mb-5 sm:h-12 sm:w-12" />
             <h2 className="text-balance text-base font-medium uppercase tracking-[0.12em] text-zinc-300 sm:text-xl sm:tracking-[0.3em]">
@@ -506,11 +506,11 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       organizationStats.slice(0, 5).map((organization) => (
                         <div
                           key={organization.id}
-                          className="w-full rounded-[20px] border border-transparent bg-[#1c1c1c] p-5 transition-colors hover:border-[#39FF14]"
+                          className="w-full rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 transition-colors hover:border-[#39FF14] sm:rounded-[20px] sm:p-5"
                         >
-                          <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                             <div className="min-w-0">
-                              <span className="block break-words font-medium text-lg text-white">
+                              <span className="block break-words font-medium text-base text-white sm:text-lg">
                                 {organization.name}
                               </span>
                               {organization.url && (
@@ -518,7 +518,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                   {organization.url}
                                 </p>
                               )}
-                              <p className="mt-3 text-sm leading-relaxed text-zinc-500">
+                              <p className="mt-2 text-xs leading-relaxed text-zinc-500 sm:mt-3 sm:text-sm">
                                 {formatContributionMeta(
                                   organization.prCount,
                                   organization.commitCount,
@@ -526,7 +526,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                 )}
                               </p>
                             </div>
-                            <div className="justify-self-start rounded-full bg-[#00FF41]/10 px-4 py-2 text-sm font-medium text-[#00FF41] sm:justify-self-auto">
+                            <div className="self-start rounded-full bg-[#00FF41]/10 px-3 py-1.5 text-xs font-medium text-[#00FF41] shrink-0 sm:px-4 sm:py-2 sm:text-sm">
                               {organization.totalContributions} Total
                             </div>
                           </div>
@@ -558,11 +558,11 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       contributorStats.slice(0, 5).map((contributor) => (
                         <div
                           key={contributor.id}
-                          className="w-full rounded-[20px] border border-transparent bg-[#1c1c1c] p-5 transition-colors hover:border-[#39FF14]"
+                          className="w-full rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 transition-colors hover:border-[#39FF14] sm:rounded-[20px] sm:p-5"
                         >
-                          <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                             <div className="min-w-0 text-left">
-                              <span className="block break-words font-medium text-lg leading-tight text-white">
+                              <span className="block break-words font-medium text-base leading-tight text-white sm:text-lg">
                                 {contributor.name}
                               </span>
                               <span className="mt-1 block break-words text-xs font-medium text-zinc-500 sm:text-sm">
@@ -570,7 +570,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                   ? `@${contributor.login}`
                                   : "Point Blank contributor"}
                               </span>
-                              <p className="mt-3 text-sm leading-relaxed text-zinc-500">
+                              <p className="mt-2 text-xs leading-relaxed text-zinc-500 sm:mt-3 sm:text-sm">
                                 {formatContributionMeta(
                                   contributor.prCount,
                                   contributor.commitCount,
@@ -578,7 +578,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                 )}
                               </p>
                             </div>
-                            <div className="justify-self-start rounded-full bg-[#00FF41]/10 px-4 py-2 text-sm font-medium text-[#00FF41] sm:justify-self-auto">
+                            <div className="self-start rounded-full bg-[#00FF41]/10 px-3 py-1.5 text-xs font-medium text-[#00FF41] shrink-0 sm:px-4 sm:py-2 sm:text-sm">
                               {contributor.totalContributions} Total
                             </div>
                           </div>
