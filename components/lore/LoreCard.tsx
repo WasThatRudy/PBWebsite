@@ -11,7 +11,7 @@ type LoreCardProps = LoreType & {
   onEdit?: () => void;
   onDelete?: () => void;
 };
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function LoreCard({
   _id,
   title,
