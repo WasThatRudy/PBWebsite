@@ -348,29 +348,43 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-pbpages text-zinc-300 flex flex-col items-center justify-center font-medium">
-        <h2 className="text-xl text-zinc-400 tracking-[0.3em] uppercase animate-pulse">
-          Fetching Contributions...
-        </h2>
+      <div className="min-h-screen bg-pbpages px-4 text-zinc-300">
+        <div className="mx-auto flex min-h-screen w-full max-w-[1700px] items-center justify-center py-16 sm:px-6 lg:px-10 xl:px-[80px]">
+          <div className="flex w-full max-w-md flex-col items-center rounded-[28px] border border-white/6 bg-[#1c1c1c] px-6 py-10 text-center sm:px-8">
+            <div className="mb-5 h-12 w-12 animate-spin rounded-full border-2 border-[#39FF14]/25 border-t-[#39FF14]" />
+            <h2 className="text-balance text-lg font-medium uppercase tracking-[0.18em] text-zinc-300 sm:text-xl sm:tracking-[0.3em]">
+              Fetching Contributions...
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-zinc-500 sm:text-base">
+              Pulling the latest open source stats for Point Blank.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (status === "error") {
     return (
-      <div className="min-h-screen bg-pbpages text-zinc-300 flex flex-col items-center justify-center p-[80px] font-medium">
-        <div className="mb-4 text-red-300">
-          <h2 className="text-2xl font-medium text-white text-center">
-            Failed to load data
-          </h2>
+      <div className="min-h-screen bg-pbpages px-4 text-zinc-300 font-medium">
+        <div className="mx-auto flex min-h-screen w-full max-w-[1700px] items-center justify-center py-16 sm:px-6 lg:px-10 xl:px-[80px]">
+          <div className="flex w-full max-w-lg flex-col items-center rounded-[28px] border border-red-400/10 bg-[#1c1c1c] px-6 py-10 text-center sm:px-8">
+            <div className="mb-4 text-red-300">
+              <h2 className="text-2xl font-medium text-white text-center">
+                Failed to load data
+              </h2>
+            </div>
+            <p className="mb-8 max-w-md text-center text-sm leading-relaxed text-zinc-500 sm:text-base">
+              {errorMessage}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="flex items-center rounded-full border border-[#00FF41]/50 bg-[#00FF41]/10 px-6 py-3 text-sm font-medium uppercase tracking-[0.18em] text-[#00FF41] transition-colors hover:bg-[#00FF41] hover:text-black sm:text-base sm:tracking-[0.24em]"
+            >
+              Retry Connection
+            </button>
+          </div>
         </div>
-        <p className="text-zinc-500 text-center max-w-md mb-8">{errorMessage}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="flex items-center px-6 py-3 bg-[#00FF41]/10 text-[#00FF41] border border-[#00FF41]/50 rounded-full hover:bg-[#00FF41] hover:text-black transition-colors font-medium uppercase tracking-[0.24em]"
-        >
-          Retry Connection
-        </button>
       </div>
     );
   }
@@ -404,7 +418,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+          <div className="mb-10 grid grid-cols-1 gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-center">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -412,7 +426,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                   setActiveTab(tab.id);
                   setSearchQuery("");
                 }}
-                className={`inline-flex min-w-[170px] items-center justify-center px-5 md:px-7 py-2.5 rounded-full border font-medium text-sm md:text-base transition-all ${
+                className={`inline-flex w-full items-center justify-center rounded-full border px-5 py-2.5 text-sm font-medium transition-all sm:min-w-[170px] sm:w-auto md:px-7 md:text-base ${
                   activeTab === tab.id
                     ? "bg-[#39FF14] text-black border-[#39FF14]"
                     : "bg-[#222222] text-zinc-300 border-transparent hover:text-white hover:border-[#39FF14]"
@@ -469,15 +483,15 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
                 <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-medium text-white">
+                  <div className="mb-6 flex items-end justify-between gap-4">
+                    <h2 className="text-2xl font-medium text-white sm:text-[2rem]">
                       Top Organizations
                     </h2>
                     <button
                       onClick={() => setActiveTab("organizations")}
-                      className="text-[#00FF41] text-sm hover:underline flex items-center font-medium"
+                      className="shrink-0 text-right text-xs font-medium uppercase tracking-[0.18em] text-[#00FF41] hover:underline sm:text-sm sm:tracking-[0.24em]"
                     >
                       VIEW ALL
                     </button>
@@ -492,27 +506,29 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       organizationStats.slice(0, 5).map((organization) => (
                         <div
                           key={organization.id}
-                          className="w-full flex items-center justify-between p-5 bg-[#1c1c1c] rounded-[20px] border border-transparent hover:border-[#39FF14] transition-colors"
+                          className="w-full rounded-[20px] border border-transparent bg-[#1c1c1c] p-5 transition-colors hover:border-[#39FF14]"
                         >
-                          <div>
-                            <span className="font-medium text-lg text-white">
-                              {organization.name}
-                            </span>
-                            {organization.url && (
-                              <p className="text-xs text-zinc-500 mt-1">
-                                {organization.url}
-                              </p>
-                            )}
-                            <p className="text-xs text-zinc-500 mt-2">
-                              {formatContributionMeta(
-                                organization.prCount,
-                                organization.commitCount,
-                                organization.totalContributions,
+                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+                            <div className="min-w-0">
+                              <span className="block break-words font-medium text-lg text-white">
+                                {organization.name}
+                              </span>
+                              {organization.url && (
+                                <p className="mt-1 break-all pr-1 text-xs text-zinc-500">
+                                  {organization.url}
+                                </p>
                               )}
-                            </p>
-                          </div>
-                          <div className="flex items-center text-[#00FF41] text-sm bg-[#00FF41]/10 px-4 py-1.5 rounded-full font-medium">
-                            {organization.totalContributions} Total
+                              <p className="mt-3 text-sm leading-relaxed text-zinc-500">
+                                {formatContributionMeta(
+                                  organization.prCount,
+                                  organization.commitCount,
+                                  organization.totalContributions,
+                                )}
+                              </p>
+                            </div>
+                            <div className="rounded-full bg-[#00FF41]/10 px-4 py-2 text-sm font-medium text-[#00FF41]">
+                              {organization.totalContributions} Total
+                            </div>
                           </div>
                         </div>
                       ))
@@ -521,13 +537,13 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-medium text-white">
+                  <div className="mb-6 flex items-end justify-between gap-4">
+                    <h2 className="text-2xl font-medium text-white sm:text-[2rem]">
                       Top Contributors
                     </h2>
                     <button
                       onClick={() => setActiveTab("contributors")}
-                      className="text-[#00FF41] text-sm hover:underline flex items-center font-medium"
+                      className="shrink-0 text-right text-xs font-medium uppercase tracking-[0.18em] text-[#00FF41] hover:underline sm:text-sm sm:tracking-[0.24em]"
                     >
                       VIEW ALL
                     </button>
@@ -544,25 +560,25 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                           key={contributor.id}
                           className="w-full rounded-[20px] border border-transparent bg-[#1c1c1c] p-5 transition-colors hover:border-[#39FF14]"
                         >
-                          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                            <div className="min-w-0 flex-1 text-left">
-                            <span className="block font-medium text-lg text-white leading-tight">
-                              {contributor.name}
-                            </span>
-                            <span className="mt-1 block break-words text-xs text-zinc-500 font-medium sm:text-sm">
-                              {contributor.login
-                                ? `@${contributor.login}`
-                                : "Point Blank contributor"}
-                            </span>
-                            <p className="mt-3 text-sm leading-relaxed text-zinc-500">
-                              {formatContributionMeta(
-                                contributor.prCount,
-                                contributor.commitCount,
-                                contributor.totalContributions,
-                              )}
-                            </p>
+                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+                            <div className="min-w-0 text-left">
+                              <span className="block break-words font-medium text-lg leading-tight text-white">
+                                {contributor.name}
+                              </span>
+                              <span className="mt-1 block break-words text-xs font-medium text-zinc-500 sm:text-sm">
+                                {contributor.login
+                                  ? `@${contributor.login}`
+                                  : "Point Blank contributor"}
+                              </span>
+                              <p className="mt-3 text-sm leading-relaxed text-zinc-500">
+                                {formatContributionMeta(
+                                  contributor.prCount,
+                                  contributor.commitCount,
+                                  contributor.totalContributions,
+                                )}
+                              </p>
                             </div>
-                            <div className="self-start rounded-full bg-[#00FF41]/10 px-4 py-2 text-sm font-medium text-[#00FF41] sm:shrink-0">
+                            <div className="rounded-full bg-[#00FF41]/10 px-4 py-2 text-sm font-medium text-[#00FF41]">
                               {contributor.totalContributions} Total
                             </div>
                           </div>
@@ -794,21 +810,21 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                             Organizations
                           </div>
                           <div className="flex flex-wrap gap-1.5">
-                          {contributor.organizations.length === 0 ? (
-                            <span className="text-xs text-zinc-600">
-                              No orgs yet
-                            </span>
-                          ) : (
-                            contributor.organizations.map((organization) => (
-                              <span
-                                key={organization.id}
-                                title={organization.name}
-                                className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 text-xs text-zinc-300"
-                              >
-                                {organization.name}
+                            {contributor.organizations.length === 0 ? (
+                              <span className="text-xs text-zinc-600">
+                                No orgs yet
                               </span>
-                            ))
-                          )}
+                            ) : (
+                              contributor.organizations.map((organization) => (
+                                <span
+                                  key={organization.id}
+                                  title={organization.name}
+                                  className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 text-xs text-zinc-300"
+                                >
+                                  {organization.name}
+                                </span>
+                              ))
+                            )}
                           </div>
                         </div>
                       </div>
