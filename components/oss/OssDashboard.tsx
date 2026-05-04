@@ -44,9 +44,9 @@ function buildViewUrl(
 }
 
 const TABS: Array<{ id: DashboardTab; label: string }> = [
-  { id: "dashboard", label: "Dashboard" },
-  { id: "organizations", label: "Organizations" },
-  { id: "contributors", label: "Contributors" },
+  { id: "dashboard", label: "DASHBOARD" },
+  { id: "organizations", label: "ORGANIZATIONS" },
+  { id: "contributors", label: "CONTRIBUTORS" },
 ];
 
 const ORGANIZATION_SORT_OPTIONS: Array<{
@@ -140,6 +140,97 @@ function ContributorStatIcon() {
         strokeWidth="2"
       />
     </svg>
+  );
+}
+
+function OssPointBlankLoader({
+  message,
+  subtext,
+}: {
+  message: string;
+  subtext: string;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-4 text-center">
+      <svg className="h-15 w-30" viewBox="0 0 120 60" aria-hidden="true">
+        <path
+          className="fill-none stroke-pbgreen stroke-5 animate-[draw_1.5s_ease-in-out_infinite]"
+          style={{
+            strokeDasharray: 100,
+            strokeDashoffset: 100,
+            strokeLinecap: "round",
+          }}
+          d="M40 15 L20 30 L40 45"
+        />
+
+        <path
+          className="fill-none stroke-pbgreen stroke-5 animate-[draw_1.5s_ease-in-out_infinite]"
+          style={{
+            strokeDasharray: 100,
+            strokeDashoffset: 100,
+            strokeLinecap: "round",
+            animationDelay: "0.5s",
+          }}
+          d="M80 15 L100 30 L80 45"
+        />
+
+        <circle
+          className="fill-pbgreen animate-[pop_1.5s_infinite]"
+          style={{
+            animationDelay: "1s",
+            opacity: 0,
+            transformOrigin: "center",
+          }}
+          cx="50"
+          cy="30"
+          r="4"
+        />
+      </svg>
+
+      <div className="space-y-2">
+        <p className="text-sm font-medium uppercase tracking-[0.22em] text-white sm:text-base">
+          {message}
+        </p>
+        <p className="max-w-sm text-sm leading-relaxed text-zinc-500">
+          {subtext}
+        </p>
+      </div>
+
+      <style jsx>{`
+        @keyframes draw {
+          0% {
+            stroke-dashoffset: 100;
+          }
+          20%,
+          90% {
+            stroke-dashoffset: 0;
+          }
+          100% {
+            stroke-dashoffset: 100;
+          }
+        }
+
+        @keyframes pop {
+          0% {
+            opacity: 0;
+            transform: scale(0);
+          }
+          5% {
+            opacity: 1;
+            transform: scale(1.2);
+          }
+          10%,
+          90% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0);
+          }
+        }
+      `}</style>
+    </div>
   );
 }
 
@@ -348,14 +439,11 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
     return (
       <div className="bg-pbpages px-3 pb-12 pt-8 text-zinc-300 sm:px-4 sm:pb-20 sm:pt-12">
         <div className="mx-auto flex w-full max-w-[1700px] justify-center sm:px-6 lg:px-10 xl:px-[80px]">
-          <div className="flex w-full max-w-md flex-col items-center rounded-[20px] border border-white/6 bg-[#1c1c1c] px-4 py-8 text-center shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:rounded-[28px] sm:px-8 sm:py-10">
-            <div className="mb-4 h-10 w-10 animate-spin rounded-full border-2 border-zinc-700 border-t-[#39FF14] sm:mb-5 sm:h-12 sm:w-12" />
-            <h2 className="text-balance text-base font-medium uppercase tracking-[0.12em] text-zinc-300 sm:text-xl sm:tracking-[0.3em]">
-              Fetching Contributions...
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-500 sm:text-base">
-              Pulling the latest open source stats for Point Blank.
-            </p>
+          <div className="flex w-full max-w-md flex-col items-center rounded-[20px] bg-[#1c1c1c] px-4 py-8 text-center shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:rounded-[28px] sm:px-8 sm:py-10">
+            <OssPointBlankLoader
+              message="Fetching Contributions"
+              subtext="Pulling the latest open source stats for Point Blank."
+            />
           </div>
         </div>
       </div>
@@ -424,7 +512,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                   setActiveTab(tab.id);
                   setSearchQuery("");
                 }}
-                className={`inline-flex w-full items-center justify-center rounded-full px-3 py-2 text-xs font-medium transition-all sm:min-w-[170px] sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm md:px-7 md:text-base ${
+                className={`inline-flex w-full items-center justify-center rounded-full px-3 py-2 text-[10px] font-medium tracking-[0.08em] transition-all sm:min-w-[170px] sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm sm:tracking-[0.18em] md:px-7 md:text-base ${
                   activeTab === tab.id
                     ? "bg-[#39FF14] text-black"
                     : "bg-[#222222] text-zinc-300 hover:bg-[#2a2a2a] hover:text-white"
