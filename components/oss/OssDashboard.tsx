@@ -348,9 +348,9 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
 
   if (status === "loading") {
     return (
-      <div className="bg-pbpages px-3 pb-12 pt-6 text-zinc-300 sm:px-4 sm:pb-20 sm:pt-12 min-h-[70vh] flex items-center justify-center">
-        <div className="mx-auto flex w-full max-w-[1700px] items-center justify-center sm:px-6 lg:px-10 xl:px-[80px]">
-          <div className="flex w-full max-w-md flex-col items-center rounded-[20px] border border-white/6 bg-[#1c1c1c] px-4 py-8 text-center sm:rounded-[28px] sm:px-8 sm:py-10">
+      <div className="bg-pbpages px-3 pb-12 pt-8 text-zinc-300 sm:px-4 sm:pb-20 sm:pt-12">
+        <div className="mx-auto flex w-full max-w-[1700px] justify-center sm:px-6 lg:px-10 xl:px-[80px]">
+          <div className="flex w-full max-w-md flex-col items-center rounded-[20px] border border-white/6 bg-[#1c1c1c] px-4 py-8 text-center shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:rounded-[28px] sm:px-8 sm:py-10">
             <div className="mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[#39FF14]/25 border-t-[#39FF14] sm:mb-5 sm:h-12 sm:w-12" />
             <h2 className="text-balance text-base font-medium uppercase tracking-[0.12em] text-zinc-300 sm:text-xl sm:tracking-[0.3em]">
               Fetching Contributions...
@@ -368,7 +368,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
     return (
       <div className="bg-pbpages px-3 pb-12 pt-6 text-zinc-300 font-medium sm:px-4 sm:pb-20 sm:pt-12">
         <div className="mx-auto flex w-full max-w-[1700px] items-start justify-center sm:px-6 lg:px-10 xl:px-[80px]">
-          <div className="flex w-full max-w-lg flex-col items-center rounded-[20px] border border-red-400/10 bg-[#1c1c1c] px-4 py-8 text-center sm:rounded-[28px] sm:px-8 sm:py-10">
+          <div className="flex w-full max-w-lg flex-col items-center rounded-[20px] border border-red-400/10 bg-[#1c1c1c] px-4 py-8 text-center shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:rounded-[28px] sm:px-8 sm:py-10">
             <div className="mb-4 text-red-300">
               <h2 className="text-2xl font-medium text-white text-center">
                 Failed to load data
@@ -656,31 +656,33 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       key={organization.id}
                       className="flex flex-col rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 shadow-lg transition-colors hover:border-[#39FF14] sm:rounded-[20px] sm:p-5 md:p-6"
                     >
-                      <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:justify-between sm:items-start sm:mb-6 sm:gap-4">
-                        <div>
-                          <h3 className="text-lg font-medium text-white sm:text-xl">
-                            {organization.name}
-                          </h3>
-                          {organization.url && (
-                            <p className="text-xs text-zinc-500 mt-2 break-all">
-                              {organization.url}
-                            </p>
-                          )}
-                          <div className="mt-3 flex flex-wrap items-center gap-2">
-                            <span
-                              className={`rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.18em] ${tagBadgeClasses(
-                                organization.tag,
-                              )}`}
-                            >
-                              {formatTagLabel(organization.tag)}
-                            </span>
-                            <span className="text-xs text-zinc-500">
-                              {organization.commitCount} commits
-                            </span>
+                      <div className="mb-4 flex flex-col gap-4 sm:mb-6">
+                        <div className="flex flex-col gap-3 min-[420px]:flex-row min-[420px]:items-start min-[420px]:justify-between">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="break-words text-lg font-medium text-white sm:text-xl">
+                              {organization.name}
+                            </h3>
+                            {organization.url && (
+                              <p className="mt-2 break-all pr-1 text-xs text-zinc-500">
+                                {organization.url}
+                              </p>
+                            )}
+                          </div>
+                          <div className="self-start rounded-full bg-[#00FF41]/10 px-3 py-1.5 text-xs font-medium tracking-wider text-[#00FF41] sm:px-4 sm:py-2 sm:text-sm">
+                            <span>{organization.totalContributions} Total</span>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-1 text-[#00FF41] bg-[#00FF41]/10 px-3 py-1 rounded-full text-xs tracking-wider shrink-0 font-medium self-start sm:text-sm">
-                          <span>{organization.totalContributions} Total</span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className={`rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.18em] ${tagBadgeClasses(
+                              organization.tag,
+                            )}`}
+                          >
+                            {formatTagLabel(organization.tag)}
+                          </span>
+                          <span className="text-xs text-zinc-500">
+                            {organization.commitCount} commits
+                          </span>
                         </div>
                       </div>
 
@@ -777,7 +779,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       className="rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 transition-colors hover:border-[#39FF14] sm:rounded-[20px] sm:p-5 md:p-6"
                     >
                       <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                        <div className="flex flex-col gap-3 min-[420px]:flex-row min-[420px]:items-start min-[420px]:justify-between min-[420px]:gap-4">
                           <div className="min-w-0 flex-1">
                             <h3 className="break-words text-lg font-medium text-white sm:text-xl">
                               {contributor.name}
@@ -800,7 +802,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                               </p>
                             )}
                           </div>
-                          <div className="self-start rounded-full bg-[#00FF41]/10 px-3 py-1.5 text-sm font-medium text-[#00FF41] sm:px-4 sm:py-2 sm:text-base sm:shrink-0">
+                          <div className="self-start rounded-full bg-[#00FF41]/10 px-3 py-1.5 text-sm font-medium text-[#00FF41] min-[420px]:shrink-0 sm:px-4 sm:py-2 sm:text-base">
                             {contributor.totalContributions} Total
                           </div>
                         </div>
