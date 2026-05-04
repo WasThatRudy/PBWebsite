@@ -167,15 +167,12 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
     return "None";
   }
 
-  function tagBadgeClasses(tag: ContributionTag) {
-    if (tag === "gsoc") return "bg-[#39FF14]/10 text-[#39FF14] border-[#39FF14]/40";
-    if (tag === "lfx") return "bg-cyan-500/10 text-cyan-300 border-cyan-400/40";
-    if (tag === "both") return "bg-amber-500/10 text-amber-300 border-amber-400/40";
-    return "bg-zinc-700/20 text-zinc-400 border-zinc-700/40";
+  function tagBadgeClasses(_tag: ContributionTag) {
+    return "bg-[#39FF14] text-black";
   }
 
-  function formatContributionMeta(prs: number, commits: number, total: number) {
-    return `${prs} PRs • ${commits} commits • ${total} total`;
+  function formatContributionMeta(prs: number, commits: number) {
+    return `${prs} PRs • ${commits} commits`;
   }
 
   useEffect(() => {
@@ -351,7 +348,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
       <div className="bg-pbpages px-3 pb-12 pt-8 text-zinc-300 sm:px-4 sm:pb-20 sm:pt-12">
         <div className="mx-auto flex w-full max-w-[1700px] justify-center sm:px-6 lg:px-10 xl:px-[80px]">
           <div className="flex w-full max-w-md flex-col items-center rounded-[20px] border border-white/6 bg-[#1c1c1c] px-4 py-8 text-center shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:rounded-[28px] sm:px-8 sm:py-10">
-            <div className="mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[#39FF14]/25 border-t-[#39FF14] sm:mb-5 sm:h-12 sm:w-12" />
+            <div className="mb-4 h-10 w-10 animate-spin rounded-full border-2 border-zinc-700 border-t-[#39FF14] sm:mb-5 sm:h-12 sm:w-12" />
             <h2 className="text-balance text-base font-medium uppercase tracking-[0.12em] text-zinc-300 sm:text-xl sm:tracking-[0.3em]">
               Fetching Contributions...
             </h2>
@@ -379,7 +376,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="flex items-center rounded-full border border-[#00FF41]/50 bg-[#00FF41]/10 px-6 py-3 text-sm font-medium uppercase tracking-[0.18em] text-[#00FF41] transition-colors hover:bg-[#00FF41] hover:text-black sm:text-base sm:tracking-[0.24em]"
+              className="flex items-center rounded-full bg-[#39FF14] px-6 py-3 text-sm font-medium uppercase tracking-[0.18em] text-black transition-colors hover:bg-[#32e600] sm:text-base sm:tracking-[0.24em]"
             >
               Retry Connection
             </button>
@@ -426,10 +423,10 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                   setActiveTab(tab.id);
                   setSearchQuery("");
                 }}
-                className={`inline-flex w-full items-center justify-center rounded-full border px-3 py-2 text-xs font-medium transition-all sm:min-w-[170px] sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm md:px-7 md:text-base ${
+                className={`inline-flex w-full items-center justify-center rounded-full px-3 py-2 text-xs font-medium transition-all sm:min-w-[170px] sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm md:px-7 md:text-base ${
                   activeTab === tab.id
-                    ? "bg-[#39FF14] text-black border-[#39FF14]"
-                    : "bg-[#222222] text-zinc-300 border-transparent hover:text-white hover:border-[#39FF14]"
+                    ? "bg-[#39FF14] text-black"
+                    : "bg-[#222222] text-zinc-300 hover:bg-[#2a2a2a] hover:text-white"
                 }`}
               >
                 {tab.label}
@@ -440,7 +437,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
           {activeTab === "dashboard" && (
             <div className="space-y-10">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 md:gap-6">
-                <div className="flex min-h-[120px] flex-col rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 transition-colors hover:border-[#39FF14] sm:min-h-[160px] sm:rounded-[20px] sm:p-6">
+                <div className="flex min-h-[120px] flex-col rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:min-h-[160px] sm:rounded-[20px] sm:p-6">
                   <div className="mb-3 flex items-center gap-3 sm:mb-6 sm:gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-[14px] sm:h-14 sm:w-14 sm:rounded-[18px]">
                       <PrStatIcon />
@@ -454,7 +451,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                   </div>
                 </div>
 
-                <div className="flex min-h-[120px] flex-col rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 transition-colors hover:border-[#39FF14] sm:min-h-[160px] sm:rounded-[20px] sm:p-6">
+                <div className="flex min-h-[120px] flex-col rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:min-h-[160px] sm:rounded-[20px] sm:p-6">
                   <div className="mb-3 flex items-center gap-3 sm:mb-6 sm:gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-[14px] sm:h-14 sm:w-14 sm:rounded-[18px]">
                       <OrgStatIcon />
@@ -468,7 +465,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                   </div>
                 </div>
 
-                <div className="flex min-h-[120px] flex-col rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 transition-colors hover:border-[#39FF14] sm:min-h-[160px] sm:rounded-[20px] sm:p-6">
+                <div className="flex min-h-[120px] flex-col rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:min-h-[160px] sm:rounded-[20px] sm:p-6">
                   <div className="mb-3 flex items-center gap-3 sm:mb-6 sm:gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-[14px] sm:h-14 sm:w-14 sm:rounded-[18px]">
                       <ContributorStatIcon />
@@ -491,7 +488,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                     </h2>
                     <button
                       onClick={() => setActiveTab("organizations")}
-                      className="shrink-0 text-right text-xs font-medium uppercase tracking-[0.18em] text-[#00FF41] hover:underline sm:text-sm sm:tracking-[0.24em]"
+                      className="shrink-0 rounded-full bg-[#39FF14] px-4 py-2 text-right text-[11px] font-medium uppercase tracking-[0.18em] text-black transition-colors hover:bg-[#32e600] sm:text-sm sm:tracking-[0.24em]"
                     >
                       VIEW ALL
                     </button>
@@ -506,9 +503,9 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       organizationStats.slice(0, 5).map((organization) => (
                         <div
                           key={organization.id}
-                          className="w-full rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 transition-colors hover:border-[#39FF14] sm:rounded-[20px] sm:p-5"
+                          className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5"
                         >
-                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:gap-4">
                             <div className="min-w-0">
                               <span className="block break-words font-medium text-base text-white sm:text-lg">
                                 {organization.name}
@@ -522,11 +519,10 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                 {formatContributionMeta(
                                   organization.prCount,
                                   organization.commitCount,
-                                  organization.totalContributions,
                                 )}
                               </p>
                             </div>
-                            <div className="self-start rounded-full bg-[#00FF41]/10 px-3 py-1.5 text-xs font-medium text-[#00FF41] shrink-0 sm:px-4 sm:py-2 sm:text-sm">
+                            <div className="justify-self-end rounded-full bg-[#39FF14] px-2.5 py-1 text-[11px] font-medium text-black sm:px-3 sm:py-1.5 sm:text-xs">
                               {organization.totalContributions} Total
                             </div>
                           </div>
@@ -543,7 +539,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                     </h2>
                     <button
                       onClick={() => setActiveTab("contributors")}
-                      className="shrink-0 text-right text-xs font-medium uppercase tracking-[0.18em] text-[#00FF41] hover:underline sm:text-sm sm:tracking-[0.24em]"
+                      className="shrink-0 rounded-full bg-[#39FF14] px-4 py-2 text-right text-[11px] font-medium uppercase tracking-[0.18em] text-black transition-colors hover:bg-[#32e600] sm:text-sm sm:tracking-[0.24em]"
                     >
                       VIEW ALL
                     </button>
@@ -558,9 +554,9 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       contributorStats.slice(0, 5).map((contributor) => (
                         <div
                           key={contributor.id}
-                          className="w-full rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 transition-colors hover:border-[#39FF14] sm:rounded-[20px] sm:p-5"
+                          className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5"
                         >
-                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:gap-4">
                             <div className="min-w-0 text-left">
                               <span className="block break-words font-medium text-base leading-tight text-white sm:text-lg">
                                 {contributor.name}
@@ -574,11 +570,10 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                 {formatContributionMeta(
                                   contributor.prCount,
                                   contributor.commitCount,
-                                  contributor.totalContributions,
                                 )}
                               </p>
                             </div>
-                            <div className="self-start rounded-full bg-[#00FF41]/10 px-3 py-1.5 text-xs font-medium text-[#00FF41] shrink-0 sm:px-4 sm:py-2 sm:text-sm">
+                            <div className="justify-self-end rounded-full bg-[#39FF14] px-2.5 py-1 text-[11px] font-medium text-black sm:px-3 sm:py-1.5 sm:text-xs">
                               {contributor.totalContributions} Total
                             </div>
                           </div>
@@ -595,7 +590,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
             <div>
               <div className="flex flex-col gap-3 mb-6 sm:gap-4 md:flex-row md:items-center md:justify-between md:mb-8">
                 <h2 className="text-2xl font-medium text-white shrink-0 sm:text-3xl">
-                  Organizations
+                  Explore Repositories
                 </h2>
                 <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto md:justify-end">
                   <div className="w-full sm:w-[260px]">
@@ -604,7 +599,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       placeholder="search"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
-                      className="bg-[#111111] border border-transparent hover:border-[#39FF14] focus:border-[#39FF14] text-white rounded-full outline-none px-4 py-2.5 text-sm transition-colors w-full font-medium sm:px-6 sm:py-3"
+                      className="w-full rounded-full bg-[#111111] px-4 py-2.5 text-sm font-medium text-white outline-none sm:px-6 sm:py-3"
                     />
                   </div>
                   <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-end">
@@ -613,10 +608,10 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                         key={option.id}
                         type="button"
                         onClick={() => setOrgSort(option.id)}
-                        className={`inline-flex items-center justify-center rounded-full border px-3 py-2 text-xs transition-colors sm:px-4 sm:py-3 sm:text-sm ${
+                        className={`inline-flex items-center justify-center rounded-full px-3 py-2 text-xs transition-colors sm:px-4 sm:py-3 sm:text-sm ${
                           orgSort === option.id
-                            ? "border-[#39FF14] bg-[#39FF14] text-black"
-                            : "border-transparent bg-[#111111] text-zinc-300 hover:border-[#39FF14] hover:text-white"
+                            ? "bg-[#39FF14] text-black"
+                            : "bg-[#111111] text-zinc-300 hover:bg-[#222222] hover:text-white"
                         }`}
                       >
                         {option.label}
@@ -632,10 +627,10 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                     key={option.id}
                     type="button"
                     onClick={() => setOrganizationTag(option.id)}
-                    className={`inline-flex items-center justify-center rounded-full border px-3 py-1.5 text-xs transition-colors sm:px-4 sm:py-2 sm:text-sm ${
+                    className={`inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs transition-colors sm:px-4 sm:py-2 sm:text-sm ${
                       organizationTag === option.id
-                        ? "border-[#39FF14] bg-[#39FF14] text-black"
-                        : "border-transparent bg-[#111111] text-zinc-300 hover:border-[#39FF14] hover:text-white"
+                        ? "bg-[#39FF14] text-black"
+                        : "bg-[#111111] text-zinc-300 hover:bg-[#222222] hover:text-white"
                     }`}
                   >
                     {option.label}
@@ -654,11 +649,11 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                   {filteredAndSortedOrganizations.map((organization) => (
                     <div
                       key={organization.id}
-                      className="flex flex-col rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 shadow-lg transition-colors hover:border-[#39FF14] sm:rounded-[20px] sm:p-5 md:p-6"
+                      className="flex flex-col rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5 md:p-6"
                     >
                       <div className="mb-4 flex flex-col gap-4 sm:mb-6">
-                        <div className="flex flex-col gap-3 min-[420px]:flex-row min-[420px]:items-start min-[420px]:justify-between">
-                          <div className="min-w-0 flex-1">
+                        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+                          <div className="min-w-0 pr-1">
                             <h3 className="break-words text-lg font-medium text-white sm:text-xl">
                               {organization.name}
                             </h3>
@@ -668,13 +663,13 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                               </p>
                             )}
                           </div>
-                          <div className="self-start rounded-full bg-[#00FF41]/10 px-3 py-1.5 text-xs font-medium tracking-wider text-[#00FF41] sm:px-4 sm:py-2 sm:text-sm">
+                          <div className="justify-self-end rounded-full bg-[#39FF14] px-2.5 py-1 text-[11px] font-medium tracking-[0.12em] text-black sm:px-3 sm:py-1.5 sm:text-xs">
                             <span>{organization.totalContributions} Total</span>
                           </div>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
                           <span
-                            className={`rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.18em] ${tagBadgeClasses(
+                            className={`rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.18em] ${tagBadgeClasses(
                               organization.tag,
                             )}`}
                           >
@@ -696,7 +691,6 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                         {formatContributionMeta(
                           organization.prCount,
                           organization.commitCount,
-                          organization.totalContributions,
                         )}
                       </p>
 
@@ -713,7 +707,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                             organization.contributors.map((contributor) => (
                               <div
                                 key={contributor.id}
-                                className="bg-black/50 border border-zinc-800 px-2 py-1 rounded-full"
+                                className="rounded-full bg-[#111111] px-2.5 py-1"
                               >
                                 <span className="text-xs text-zinc-300">
                                   {contributorLabel(contributor)}
@@ -734,7 +728,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
             <div>
               <div className="flex flex-col gap-3 mb-6 sm:gap-4 md:flex-row md:items-center md:justify-between md:mb-8">
                 <h2 className="text-2xl font-medium text-white shrink-0 sm:text-3xl">
-                  Contributors
+                  Meet the Contributors
                 </h2>
                 <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto md:justify-end">
                   <div className="w-full sm:w-[260px]">
@@ -743,7 +737,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                       placeholder="search"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
-                      className="bg-[#111111] border border-transparent hover:border-[#39FF14] focus:border-[#39FF14] text-white rounded-full outline-none px-4 py-2.5 text-sm transition-colors w-full font-medium sm:px-6 sm:py-3"
+                      className="w-full rounded-full bg-[#111111] px-4 py-2.5 text-sm font-medium text-white outline-none sm:px-6 sm:py-3"
                     />
                   </div>
                   <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-end">
@@ -752,10 +746,10 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                         key={option.id}
                         type="button"
                         onClick={() => setContributorSort(option.id)}
-                        className={`inline-flex items-center justify-center rounded-full border px-3 py-2 text-xs transition-colors sm:px-4 sm:py-3 sm:text-sm ${
+                        className={`inline-flex items-center justify-center rounded-full px-3 py-2 text-xs transition-colors sm:px-4 sm:py-3 sm:text-sm ${
                           contributorSort === option.id
-                            ? "border-[#39FF14] bg-[#39FF14] text-black"
-                            : "border-transparent bg-[#111111] text-zinc-300 hover:border-[#39FF14] hover:text-white"
+                            ? "bg-[#39FF14] text-black"
+                            : "bg-[#111111] text-zinc-300 hover:bg-[#222222] hover:text-white"
                         }`}
                       >
                         {option.label}
@@ -776,10 +770,10 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                   {filteredAndSortedContributors.map((contributor) => (
                     <div
                       key={contributor.id}
-                      className="rounded-[16px] border border-transparent bg-[#1c1c1c] p-4 transition-colors hover:border-[#39FF14] sm:rounded-[20px] sm:p-5 md:p-6"
+                      className="rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5 md:p-6"
                     >
                       <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">
-                        <div className="flex flex-col gap-3 min-[420px]:flex-row min-[420px]:items-start min-[420px]:justify-between min-[420px]:gap-4">
+                        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:gap-4">
                           <div className="min-w-0 flex-1">
                             <h3 className="break-words text-lg font-medium text-white sm:text-xl">
                               {contributor.name}
@@ -793,7 +787,6 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                               {formatContributionMeta(
                                 contributor.prCount,
                                 contributor.commitCount,
-                                contributor.totalContributions,
                               )}
                             </p>
                             {contributor.bio && (
@@ -802,7 +795,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                               </p>
                             )}
                           </div>
-                          <div className="self-start rounded-full bg-[#00FF41]/10 px-3 py-1.5 text-sm font-medium text-[#00FF41] min-[420px]:shrink-0 sm:px-4 sm:py-2 sm:text-base">
+                          <div className="justify-self-end rounded-full bg-[#39FF14] px-2.5 py-1 text-xs font-medium text-black sm:px-3 sm:py-1.5 sm:text-sm">
                             {contributor.totalContributions} Total
                           </div>
                         </div>
@@ -821,7 +814,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
                                 <span
                                   key={organization.id}
                                   title={organization.name}
-                                  className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 text-xs text-zinc-300"
+                                  className="rounded-full bg-[#111111] px-2.5 py-1 text-xs text-zinc-300"
                                 >
                                   {organization.name}
                                 </span>

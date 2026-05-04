@@ -361,7 +361,7 @@ export async function getOrgBreakdown() {
     },
     {
         $addFields: {
-          totalContributions: { $add: ["$totalMergedPRs", "$totalCommits"] },
+          totalContributions: "$totalMergedPRs",
           contributorCount: {
             $size: {
               $ifNull: [
@@ -405,7 +405,7 @@ export async function getGlobalStats() {
         _id: 0,
         totalMergedPRs: 1,
         totalCommits: 1,
-        totalContributions: { $add: ["$totalMergedPRs", "$totalCommits"] },
+        totalContributions: "$totalMergedPRs",
         totalOrgs:          { $size: "$uniqueOrgs" },
         totalContributors:  { $size: "$uniqueContributors" },
       },
@@ -454,7 +454,7 @@ export async function getContributorStats(username?: string) {
         username: "$_id",
         totalMergedPRs: 1,
         totalCommits: 1,
-        totalContributions: { $add: ["$totalMergedPRs", "$totalCommits"] },
+        totalContributions: "$totalMergedPRs",
         orgs: {
           $reduce: {
             input: "$allOrgs",
