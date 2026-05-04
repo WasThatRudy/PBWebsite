@@ -69,11 +69,6 @@ export function AchievementCard({
       {/* achievements */}
       <div className="bg-pbgray flex flex-col px-3 py-2.5 gap-2">
         {member.achievements
-          .map((row) =>
-            filterCategory === "ALL"
-              ? row
-              : row.filter((item) => item.category === filterCategory),
-          )
           .filter((row) => row.length > 0)
           .map((row, i) => {
             const cols = row.length;
@@ -90,9 +85,12 @@ export function AchievementCard({
                 {row.map((item, j) => (
                   <div
                     key={j}
-                    className="bg-pbsurface rounded-lg px-3.5 py-2.5 min-w-0"
+                    className={`bg-pbsurface transition-all duration-300
+                      ${(filterCategory=="ALL"||filterCategory == item.category)
+                        ?"opacity-100 text-pbgreen/90":"opacity-40 text-pbtext"
+                      } rounded-lg px-3.5 py-2.5 min-w-0`}
                   >
-                    <p className="text-sm font-normal text-[#39d353] m-0 wrap-break-word">
+                    <p className="text-sm font-normal m-0 wrap-break-word">
                       {item.event}
                     </p>
                     <p className="text-xs text-pbtext m-0 mt-0.5 wrap-break-word">
