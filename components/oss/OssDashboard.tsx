@@ -167,7 +167,8 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
     return "None";
   }
 
-  function tagBadgeClasses(_tag: ContributionTag) {
+  function tagBadgeClasses(tag: ContributionTag) {
+    void tag;
     return "bg-[#39FF14] text-black";
   }
 
