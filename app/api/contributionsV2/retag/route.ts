@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
-import { retagAllContributions } from "@/lib/server/contributions";
+import { retagAllContributions } from "@/lib/server/contributionsV2";
 
 export async function POST(req: NextRequest) {
   const key = req.nextUrl.searchParams.get("key");
