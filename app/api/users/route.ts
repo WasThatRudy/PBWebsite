@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db/connection";
 import User from "@/lib/db/models/users";
+import "dotenv/config";
 
 export async function GET() {
   try {
@@ -17,13 +18,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-
   const key = req.headers.get("x-api-key");
 
-  //AUTH
-  if (
-    !key || (key !== process.env.SCRAPE_SECRET)
-  ) {
+  // AUTH
+  if (!key || key !== process.env.SCRAPE_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -33,13 +31,12 @@ export async function POST(req: NextRequest) {
 
     console.log("Incoming users:", body.users?.length);
 
-    //BULK INSERT/UPSERT
+    // ================= BULK UPSERT =================
     if (Array.isArray(body.users)) {
       const results = [];
       const skipped = [];
 
       for (const m of body.users) {
-        //VALIDATION
         if (!m.name || typeof m.name !== "string" || m.name.trim() === "") {
           console.log("❌ Invalid user skipped:", m);
           skipped.push(m);
@@ -49,26 +46,32 @@ export async function POST(req: NextRequest) {
         const cleanName = m.name.trim();
 
         try {
-          const doc = await User.findOneAndUpdate(
-            { name: cleanName }, //SINGLE SOURCE OF TRUTH
-            {
+          const updateQuery: any = {
+            $set: {
               name: cleanName,
-              githubUsername:
-                m.githubUsername && m.githubUsername !== "NA"
-                  ? m.githubUsername
-                  : null,
-              gitlabUsername:
-                m.gitlabUsername && m.gitlabUsername !== "NA"
-                  ? m.gitlabUsername
-                  : null,
+              ...(m.githubUsername &&
+                m.githubUsername !== "NA" && {
+                  githubUsername: m.githubUsername,
+                }),
               customOrgLinks: Array.isArray(m.customOrgLinks)
                 ? m.customOrgLinks
                 : [],
             },
+          };
+
+          // HANDLE gitlabUsername PROPERLY
+          if (m.gitlabUsername && m.gitlabUsername !== "NA") {
+            updateQuery.$set.gitlabUsername = m.gitlabUsername;
+          } else {
+            updateQuery.$unset = { gitlabUsername: "" };
+          }
+
+          const doc = await User.findOneAndUpdate(
+            { name: cleanName },
+            updateQuery,
             {
               upsert: true,
-              new: true,
-              setDefaultsOnInsert: true,
+              returnDocument: "after",
             }
           );
 
@@ -85,7 +88,9 @@ export async function POST(req: NextRequest) {
         data: results,
       });
     }
-    //SINGLE USER UPSERT
+
+    // ================= SINGLE USER UPSERT =================
+
     const { name, githubUsername, gitlabUsername, customOrgLinks } = body;
 
     if (!name || typeof name !== "string" || name.trim() === "") {
@@ -97,26 +102,31 @@ export async function POST(req: NextRequest) {
 
     const cleanName = name.trim();
 
-    const doc = await User.findOneAndUpdate(
-      { name: cleanName }, // ✅ FIXED
-      {
+    const updateQuery: any = {
+      $set: {
         name: cleanName,
-        githubUsername:
-          githubUsername && githubUsername !== "NA"
-            ? githubUsername
-            : null,
-        gitlabUsername:
-          gitlabUsername && gitlabUsername !== "NA"
-            ? gitlabUsername
-            : null,
+        ...(githubUsername &&
+          githubUsername !== "NA" && {
+            githubUsername,
+          }),
         customOrgLinks: Array.isArray(customOrgLinks)
           ? customOrgLinks
           : [],
       },
+    };
+
+    if (gitlabUsername && gitlabUsername !== "NA") {
+      updateQuery.$set.gitlabUsername = gitlabUsername;
+    } else {
+      updateQuery.$unset = { gitlabUsername: "" };
+    }
+
+    const doc = await User.findOneAndUpdate(
+      { name: cleanName },
+      updateQuery,
       {
         upsert: true,
-        new: true,
-        setDefaultsOnInsert: true,
+        returnDocument: "after",
       }
     );
 

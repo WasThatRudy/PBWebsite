@@ -36,7 +36,7 @@
     ".next/dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts"
-  ],
+, "lib/db/models/seedScript.js"  ],
   "exclude": [
     "node_modules"
   ]
