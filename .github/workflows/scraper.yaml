@@ -1,0 +1,15 @@
+name: Weekly Scrape
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"   
+  workflow_dispatch:      
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger scraper
+        run: |
+          curl -f -X POST "${{ secrets.SCRAPE_URL }}?key=${{ secrets.SCRAPE_SECRET }}&incremental=true"
