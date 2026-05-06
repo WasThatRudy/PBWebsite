@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useAuthStore } from "@/lib/store/auth";
@@ -159,9 +159,11 @@ export default function Talks(props: { talks: Talk[] }) {
   const [deleting, setDeleting] = useState(false);
 
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const [speakerQuery, setSpeakerQuery] = useState<string | null>(() => {
+  const [searchQuery, setSearchQuery] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
-    return new URLSearchParams(window.location.search).get("speaker");
+    const params = new URLSearchParams(window.location.search);
+    const firstKey = params.keys().next().value;
+    return firstKey || null;
   });
 
   const openAdd = () => {
@@ -189,27 +191,23 @@ export default function Talks(props: { talks: Talk[] }) {
   };
 
 
-  const filteredTalks =
-    (activeTab === "all" ? talks : talks.filter((t) => t.type === activeTab)).filter((talk) => {
-      if (!speakerQuery) return true;
-
-      const query = speakerQuery.toLowerCase();
-
-      return talk.speakers.split(",").some((s, i) => {
-        const name = s.trim().toLowerCase();
-
-        const username = getLinkedinUsername(talk.speakerLinkedins?.split(",")[i] || "");
-
-        return (
-          name.includes(query) ||
-          username.startsWith(query)
-        );
-      });
-    })
+  const filteredTalks = useMemo(() => {
+    return (activeTab === "all" ? talks : talks.filter((t) => t.type === activeTab))
+      .filter((talk) => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        if (talk.title.toLowerCase().includes(q)) return true;
+        if (talk.description.toLowerCase().includes(q)) return true;
+        if (talk.name.toLowerCase().includes(q)) return true;
+        return talk.speakers.split(",").some((s, i) => {
+          const name = s.trim().toLowerCase();
+          const username = getLinkedinUsername(talk.speakerLinkedins?.split(",")[i] || "");
+          return name.includes(q) || username.includes(q);
+        });
+      })
       .slice()
-      .sort(
-        (a, b) => Number(new Date(b.date)) - Number(new Date(a.date))
-      );
+      .sort((a, b) => Number(new Date(b.date)) - Number(new Date(a.date)));
+  }, [talks, activeTab, searchQuery]);
 
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -381,15 +379,8 @@ export default function Talks(props: { talks: Talk[] }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [filteredTalks.length]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const value = params.get("speaker");
-
-    setSpeakerQuery((prev) => (prev === value ? prev : value));
-  }, []);
-
   return (
-    <section className="rounded-xl text-white py-8 md:py-12 text-lexend-300 min-h-xl">
+    <section className="overflow-x-hidden rounded-xl text-white py-8 md:py-12 text-lexend-300 min-h-xl">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-10 lg:px-20 py-12 text-center">
         {/* Heading */}
         <div className="text-3xl md:text-5xl lg:text-6xl font-medium mb-6 px-4 md:px-10 flex flex-wrap justify-center gap-2">
@@ -442,45 +433,36 @@ export default function Talks(props: { talks: Talk[] }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.6, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 py-4 md:py-6"
+          className="flex flex-wrap items-center justify-between gap-2 md:gap-3 mb-8 py-4 md:py-6"
         >
-          {TABS.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 md:px-5 py-1.5 md:py-2.5 rounded-full text-sm md:text-base uppercase cursor-pointer ${activeTab === tab
-                ? "bg-pbgreen text-black"
-                : "bg-white/5 text-white/60"
-                }`}
-            >
-              {tab === "all" ? "All" : tab}
-            </button>
-          ))}
-          <div className="w-full flex justify-end items-center mb-6">
-            <label>
-              <input
-                type="text"
-                placeholder="Search speaker"
-                value={speakerQuery ?? ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-
-                  const params = new URLSearchParams(window.location.search);
-
-                  if (value) params.set("speaker", value);
-                  else params.delete("speaker");
-
-                  const queryString = params.toString();
-                  const nextUrl = `${window.location.pathname}${queryString ? `?${queryString}` : ""
-                    }${window.location.hash}`;
-                  window.history.replaceState({}, "", nextUrl)
-
-                  setSpeakerQuery(value || null);
-                }}
-                className="px-6 py-4 text-sm rounded-full text-white hover:border border-pbgreen cursor-text"
-              />
-            </label>
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+            {TABS.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 md:px-5 py-1.5 md:py-2.5 rounded-full text-sm md:text-base uppercase cursor-pointer ${activeTab === tab
+                  ? "bg-pbgreen text-black"
+                  : "bg-white/5 text-white/60"
+                  }`}
+              >
+                {tab === "all" ? "All" : tab}
+              </button>
+            ))}
           </div>
+          <input
+            type="text"
+            placeholder="search"
+            value={searchQuery ?? ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              const nextUrl = value
+                ? `${window.location.pathname}?${encodeURIComponent(value)}${window.location.hash}`
+                : `${window.location.pathname}${window.location.hash}`;
+              window.history.replaceState({}, "", nextUrl);
+              setSearchQuery(value || null);
+            }}
+            className="h-[42px] w-[200px] sm:w-[260px] rounded-full border border-transparent bg-[#222222] px-5 py-3 text-xs/relaxed font-medium text-white outline-none"
+          />
         </motion.div>
 
         {/* Talks list */}
@@ -492,8 +474,8 @@ export default function Talks(props: { talks: Talk[] }) {
           {filteredTalks.map((talk, idx) => (
             <motion.div
               key={String(talk._id)}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+              initial={searchQuery ? false : { opacity: 0 }}
+              whileInView={searchQuery ? undefined : { opacity: 1 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{
                 duration: 0.25,
