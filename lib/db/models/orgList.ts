@@ -14,8 +14,6 @@ const OrgListSchema = new Schema<IOrgList>(
   },
   { timestamps: true }
 );
-
-OrgListSchema.index({ login: 1 });
 OrgListSchema.index({ programs: 1 });
 
 const OrgList: Model<IOrgList> =
