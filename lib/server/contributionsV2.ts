@@ -390,3 +390,27 @@ export async function getContributorStats(username?: string) {
       totalOrganizations: stats[0]?.orgs.length || 0,
     };
   }
+  export async function retagAllContributions() {
+    const contributions = await Contribution.find({}, {
+      _id: 1,
+      orgLogin: 1,
+    }).lean();
+  
+    let updatedCount = 0;
+  
+    for (const doc of contributions) {
+      const newTag = getOrgTag(doc.orgLogin); // 👈 your existing logic
+  
+      const res = await Contribution.updateOne(
+        { _id: doc._id },
+        { $set: { tag: newTag } }
+      );
+  
+      if (res.modifiedCount > 0) updatedCount++;
+    }
+  
+    return {
+      total: contributions.length,
+      updated: updatedCount,
+    };
+  }
