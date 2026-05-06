@@ -67,7 +67,7 @@ export default function OssOrganizationPreviewCard({
               {visibleContributors.map((contributor) => (
                 <a
                   key={contributor.id}
-                  href={getContributorGithubUrl({ login: contributor.login })}
+                  href={getContributorGithubUrl(contributor)}
                   target="_blank"
                   rel="noreferrer"
                   className="transition-transform hover:-translate-y-0.5"
@@ -90,7 +90,7 @@ export default function OssOrganizationPreviewCard({
                     {remainingContributors.map((contributor) => (
                       <a
                         key={contributor.id}
-                        href={getContributorGithubUrl({ login: contributor.login })}
+                        href={getContributorGithubUrl(contributor)}
                         target="_blank"
                         rel="noreferrer"
                         className="transition-transform hover:-translate-y-0.5"

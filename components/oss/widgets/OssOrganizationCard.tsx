@@ -73,7 +73,7 @@ export default function OssOrganizationCard({
             organization.contributors.map((contributor) => (
               <a
                 key={contributor.id}
-                href={getContributorGithubUrl({ login: contributor.login })}
+                href={getContributorGithubUrl(contributor)}
                 target="_blank"
                 rel="noreferrer"
                 className="transition-transform hover:-translate-y-0.5"

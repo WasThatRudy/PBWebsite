@@ -39,6 +39,14 @@ interface DashboardData {
   contributors: ContributorView[];
 }
 
+function getPreferredPlatform(
+  platforms: Array<"github" | "gitlab">,
+): "github" | "gitlab" | undefined {
+  if (platforms.includes("github")) return "github";
+  if (platforms.includes("gitlab")) return "gitlab";
+  return undefined;
+}
+
 async function fetchDashboardData(endpoint: string): Promise<DashboardData> {
   const [statsRes, orgsRes, contributorsRes] = await Promise.all([
     fetch(buildUrl(endpoint, "stats")),
@@ -64,6 +72,7 @@ async function fetchDashboardData(endpoint: string): Promise<DashboardData> {
     id: org.orgLogin,
     name: org.orgLogin,
     url: org.orgUrl,
+    platform: getPreferredPlatform(org.platforms),
     description: undefined,
     tag: org.tag,
     prCount: org.totalMergedPRs,
@@ -74,28 +83,36 @@ async function fetchDashboardData(endpoint: string): Promise<DashboardData> {
       id: login,
       name: loginToName.get(login) ?? login,
       login,
+      platform: getPreferredPlatform(org.platforms),
     })),
   }));
 
   // Build an orgLogin → OssOrganizationRef lookup
   const orgRefMap = new Map(
-    organizations.map((o) => [o.id, { id: o.id, name: o.name, prCount: o.prCount }]),
+    organizations.map((o) => [
+      o.id,
+      {
+        id: o.id,
+        name: o.name,
+        prCount: o.prCount,
+        url: o.url,
+        platform: o.platform,
+      },
+    ]),
   );
 
   // Normalize contributors
   const contributors: ContributorView[] = contributorsJson.data.map((c) => ({
     id: c.memberName,
     name: c.memberName,
-
     login: c.username,
-  
     bio: undefined,
-  
-    url: `https://github.com/${c.username}`,
-  
+    url: c.username
+      ? `https://${getPreferredPlatform(c.platforms) === "gitlab" ? "gitlab.com" : "github.com"}/${c.username}`
+      : undefined,
+    platform: getPreferredPlatform(c.platforms),
     prCount: c.totalMergedPRs,
     totalContributions: c.totalMergedPRs,
-  
     organizations: c.orgs.map((orgLogin) =>
       orgRefMap.get(orgLogin) ?? { id: orgLogin, name: orgLogin },
     ),

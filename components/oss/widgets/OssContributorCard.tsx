@@ -77,7 +77,11 @@ export default function OssContributorCard({
     {visibleOrgs.map((organization) => (
       <a
         key={organization.id}
-        href={getOrganizationGithubUrl(organization.name)}
+        href={getOrganizationGithubUrl(
+          organization.name,
+          organization.url,
+          organization.platform,
+        )}
         target="_blank"
         rel="noreferrer"
         className="transition-transform hover:-translate-y-0.5"
@@ -105,7 +109,11 @@ export default function OssContributorCard({
         {remainingOrgs.map((org) => (
           <a
             key={org.id}
-            href={getOrganizationGithubUrl(org.name)}
+            href={getOrganizationGithubUrl(
+              org.name,
+              org.url,
+              org.platform,
+            )}
             target="_blank"
             rel="noreferrer"
             className="transition-transform hover:-translate-y-0.5"

@@ -1,5 +1,6 @@
 import type {
   ContributionTag,
+  ContributionPlatform,
   ContributorSortOptionId,
   ContributorView,
   DashboardTab,
@@ -55,19 +56,34 @@ export function contributorLabel(contributor: Pick<ContributorView, "login" | "n
   return contributor.login ? `@${contributor.login}` : contributor.name;
 }
 
+function buildProfileUrl(
+  loginOrName: string,
+  platform: ContributionPlatform | undefined,
+) {
+  if (!loginOrName) return undefined;
+  const baseUrl = platform === "gitlab"
+    ? "https://gitlab.com"
+    : "https://github.com";
+  return `${baseUrl}/${loginOrName}`;
+}
+
 export function getContributorGithubUrl(
-  contributor: Pick<ContributorView, "login" | "url">,
+  contributor: Pick<ContributorView, "login" | "url" | "platform">,
 ) {
   if (contributor.url) return contributor.url;
   if (!contributor.login) return undefined;
-  return `https://github.com/${contributor.login}`;
+  return buildProfileUrl(contributor.login, contributor.platform);
 }
 
-export function getOrganizationGithubUrl(name: string, url?: string) {
+export function getOrganizationGithubUrl(
+  name: string,
+  url?: string,
+  platform?: ContributionPlatform,
+) {
   if (url) return url;
   const trimmedName = name.trim();
   if (!trimmedName) return undefined;
-  return `https://github.com/${trimmedName}`;
+  return buildProfileUrl(trimmedName, platform);
 }
 
 export function buildViewUrl(
