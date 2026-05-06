@@ -5,6 +5,7 @@ import {
   formatContributionMeta,
   formatTagLabel,
   getOrganizationGithubUrl,
+  SHOW_ORGANIZATION_TAGS,
 } from "@/components/oss/utils";
 
 export default function OssOrganizationPreviewCard({
@@ -41,13 +42,15 @@ export default function OssOrganizationPreviewCard({
           </p>
         </div>
         <div className="flex min-h-[32px] flex-wrap items-center gap-1.5">
-          <Pill
-            className="font-medium uppercase tracking-[0.18em]"
-            size="compact"
-            variant="accent"
-          >
-            {formatTagLabel(organization.tag)}
-          </Pill>
+          {SHOW_ORGANIZATION_TAGS && (
+            <Pill
+              className="font-medium uppercase tracking-[0.18em]"
+              size="compact"
+              variant="accent"
+            >
+              {formatTagLabel(organization.tag)}
+            </Pill>
+          )}
           {organization.contributors.length === 0 ? (
             <Pill
               className="font-medium uppercase tracking-[0.14em]"

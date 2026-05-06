@@ -42,6 +42,8 @@ export const ORGANIZATION_TAG_OPTIONS: Array<{
   { id: "none", label: "None" },
 ];
 
+export const SHOW_ORGANIZATION_TAGS = false;
+
 export function matchSearch(values: Array<unknown>, query: string) {
   if (!query) return true;
   return values.some((value) => {

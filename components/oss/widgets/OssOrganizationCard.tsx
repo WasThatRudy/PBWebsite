@@ -5,6 +5,7 @@ import {
   formatContributionMeta,
   formatTagLabel,
   getOrganizationGithubUrl,
+  SHOW_ORGANIZATION_TAGS,
 } from "@/components/oss/utils";
 
 export default function OssOrganizationCard({
@@ -35,18 +36,17 @@ export default function OssOrganizationCard({
             </a>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Pill
-            className="font-medium uppercase tracking-[0.18em]"
-            size="compact"
-            variant="accent"
-          >
-            {formatTagLabel(organization.tag)}
-          </Pill>
-          <span className="text-xs text-zinc-500">
-            {organization.commitCount} commits
-          </span>
-        </div>
+        {SHOW_ORGANIZATION_TAGS && (
+          <div className="flex flex-wrap items-center gap-2">
+            <Pill
+              className="font-medium uppercase tracking-[0.18em]"
+              size="compact"
+              variant="accent"
+            >
+              {formatTagLabel(organization.tag)}
+            </Pill>
+          </div>
+        )}
       </div>
 
       {organization.description && (

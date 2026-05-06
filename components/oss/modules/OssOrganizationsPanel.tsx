@@ -6,6 +6,7 @@ import type {
 import {
   ORGANIZATION_SORT_OPTIONS,
   ORGANIZATION_TAG_OPTIONS,
+  SHOW_ORGANIZATION_TAGS,
 } from "@/components/oss/utils";
 import OssFilterGroup from "@/components/oss/widgets/OssFilterGroup";
 import OssOrganizationCard from "@/components/oss/widgets/OssOrganizationCard";
@@ -48,12 +49,14 @@ export default function OssOrganizationsPanel({
         </div>
       </div>
 
-      <OssFilterGroup
-        activeId={organizationTag}
-        options={ORGANIZATION_TAG_OPTIONS}
-        onChange={onOrganizationTagChange}
-        className="mb-6 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center"
-      />
+      {SHOW_ORGANIZATION_TAGS && (
+        <OssFilterGroup
+          activeId={organizationTag}
+          options={ORGANIZATION_TAG_OPTIONS}
+          onChange={onOrganizationTagChange}
+          className="mb-6 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center"
+        />
+      )}
 
       {organizations.length === 0 ? (
         <div className="rounded-[20px] bg-[#1c1c1c] py-20 text-center">

@@ -6,6 +6,7 @@ import OssOverviewSection from "@/components/oss/modules/OssOverviewSection";
 import OssHighlightsSection from "@/components/oss/modules/OssHighlightsSection";
 import OssOrganizationsPanel from "@/components/oss/modules/OssOrganizationsPanel";
 import OssContributorsPanel from "@/components/oss/modules/OssContributorsPanel";
+import LoadingBrackets from "@/components/ui/LoadingBrackets";
 import { Button } from "@/components/ui/button";
 import type {
   ContributorSortOptionId,
@@ -19,7 +20,11 @@ import type {
   OrgsResponse,
   StatsResponse,
 } from "@/components/oss/types";
-import { TABS, matchSearch } from "@/components/oss/utils";
+import {
+  SHOW_ORGANIZATION_TAGS,
+  TABS,
+  matchSearch,
+} from "@/components/oss/utils";
 
 // ─── Data fetching & normalization ────────────────────────────────────────────
 
@@ -153,13 +158,15 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
   const filteredAndSortedOrganizations = useMemo(() => {
     const results = organizations.filter((organization) => {
       const matchesTag =
-        organizationTag === "all" || organization.tag === organizationTag;
+        !SHOW_ORGANIZATION_TAGS
+        || organizationTag === "all"
+        || organization.tag === organizationTag;
       const matchesQuery = matchSearch(
         [
           organization.name,
           organization.url,
           organization.description,
-          organization.tag,
+          ...(SHOW_ORGANIZATION_TAGS ? [organization.tag] : []),
           ...organization.contributors.map((c) => c.name),
           ...organization.contributors.map((c) => c.login),
         ],
@@ -205,14 +212,7 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
 
   // ── Loading state ──
   if (status === "loading") {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-pbpages">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-[#39FF14]" />
-          <p className="text-sm font-medium text-zinc-500">Loading OSS data…</p>
-        </div>
-      </div>
-    );
+    return <LoadingBrackets />;
   }
 
   // ── Error state ──
