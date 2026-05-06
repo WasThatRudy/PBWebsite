@@ -9,6 +9,7 @@ import {
   SHOW_ORGANIZATION_TAGS,
 } from "@/components/oss/utils";
 import OssFilterGroup from "@/components/oss/widgets/OssFilterGroup";
+import OssFilterMenu from "@/components/oss/widgets/OssFilterMenu";
 import OssOrganizationCard from "@/components/oss/widgets/OssOrganizationCard";
 import OssSearchInput from "@/components/oss/widgets/OssSearchInput";
 
@@ -35,28 +36,50 @@ export default function OssOrganizationsPanel({
         <h2 className="shrink-0 text-2xl font-medium text-white sm:text-3xl">
           Explore Repositories
         </h2>
-        <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto md:justify-end">
+        <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto md:items-start md:justify-end">
           <OssSearchInput
             value={searchQuery}
             onChange={onSearchQueryChange}
           />
-          <OssFilterGroup
-            activeId={orgSort}
-            options={ORGANIZATION_SORT_OPTIONS}
-            onChange={onOrgSortChange}
-            className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-end"
-          />
+          <OssFilterMenu>
+            {({ close }) => (
+              <div className="space-y-4">
+                <div>
+                  <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500">
+                    Sort By
+                  </p>
+                  <OssFilterGroup
+                    activeId={orgSort}
+                    options={ORGANIZATION_SORT_OPTIONS}
+                    onChange={(value) => {
+                      onOrgSortChange(value);
+                      close();
+                    }}
+                    className="grid grid-cols-2 gap-2"
+                  />
+                </div>
+
+                {SHOW_ORGANIZATION_TAGS && (
+                  <div>
+                    <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500">
+                      Tags
+                    </p>
+                    <OssFilterGroup
+                      activeId={organizationTag}
+                      options={ORGANIZATION_TAG_OPTIONS}
+                      onChange={(value) => {
+                        onOrganizationTagChange(value);
+                        close();
+                      }}
+                      className="grid grid-cols-2 gap-2"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </OssFilterMenu>
         </div>
       </div>
-
-      {SHOW_ORGANIZATION_TAGS && (
-        <OssFilterGroup
-          activeId={organizationTag}
-          options={ORGANIZATION_TAG_OPTIONS}
-          onChange={onOrganizationTagChange}
-          className="mb-6 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center"
-        />
-      )}
 
       {organizations.length === 0 ? (
         <div className="rounded-[20px] bg-[#1c1c1c] py-20 text-center">
