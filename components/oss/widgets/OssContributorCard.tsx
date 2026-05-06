@@ -1,6 +1,10 @@
 import type { ContributorView } from "@/components/oss/types";
 import { Pill } from "@/components/ui/Pill";
-import { formatContributionMeta, getContributorGithubUrl } from "@/components/oss/utils";
+import {
+  formatContributionMeta,
+  getContributorGithubUrl,
+  getOrganizationGithubUrl,
+} from "@/components/oss/utils";
 
 export default function OssContributorCard({
   contributor,
@@ -71,13 +75,20 @@ export default function OssContributorCard({
 ) : (
   <>
     {visibleOrgs.map((organization) => (
-      <Pill
+      <a
         key={organization.id}
-        className="max-w-[160px]"
-        variant="muted"
+        href={getOrganizationGithubUrl(organization.name)}
+        target="_blank"
+        rel="noreferrer"
+        className="transition-transform hover:-translate-y-0.5"
       >
-        <span className="truncate">{organization.name}</span>
-      </Pill>
+        <Pill
+          className="max-w-[160px]"
+          variant="muted"
+        >
+          <span className="truncate">{organization.name}</span>
+        </Pill>
+      </a>
     ))}
 
     {remainingOrgs.length > 0 && (
@@ -90,8 +101,20 @@ export default function OssContributorCard({
         </Pill>
 
         {/* Hover dropdown */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-full z-50 mt-2 min-w-[200px] max-w-[400px] rounded-lg bg-[#111] px-3 py-2 text-xs text-zinc-400 shadow-xl opacity-0 invisible group-hover:visible group-hover:opacity-100 transition whitespace-normal">
-        {remainingOrgs.map((org) => org.name).join(", ")}
+        <div className="invisible absolute left-1/2 top-full z-50 mt-2 flex w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-wrap gap-1.5 rounded-lg bg-[#111] p-2 opacity-0 shadow-xl transition group-hover:visible group-hover:opacity-100 sm:max-w-[340px]">
+        {remainingOrgs.map((org) => (
+          <a
+            key={org.id}
+            href={getOrganizationGithubUrl(org.name)}
+            target="_blank"
+            rel="noreferrer"
+            className="transition-transform hover:-translate-y-0.5"
+          >
+            <Pill size="compact" variant="muted">
+              {org.name}
+            </Pill>
+          </a>
+        ))}
         </div>
       </div>
     )}

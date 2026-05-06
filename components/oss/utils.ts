@@ -16,7 +16,6 @@ export const ORGANIZATION_SORT_OPTIONS: Array<{
   id: OrganizationSortOptionId;
   label: string;
 }> = [
-  { id: "totalContributions", label: "Total" },
   { id: "prCount", label: "PR Count" },
   { id: "contributors", label: "Active Devs" },
   { id: "name", label: "A-Z" },
@@ -26,7 +25,6 @@ export const CONTRIBUTOR_SORT_OPTIONS: Array<{
   id: ContributorSortOptionId;
   label: string;
 }> = [
-  { id: "totalContributions", label: "Total" },
   { id: "prCount", label: "PR Count" },
   { id: "name", label: "A-Z" },
 ];

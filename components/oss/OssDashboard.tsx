@@ -124,9 +124,9 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
   const [organizationTag, setOrganizationTag] =
     useState<OrganizationTagFilter>("all");
   const [orgSort, setOrgSort] =
-    useState<OrganizationSortOptionId>("totalContributions");
+    useState<OrganizationSortOptionId>("prCount");
   const [contributorSort, setContributorSort] =
-    useState<ContributorSortOptionId>("totalContributions");
+    useState<ContributorSortOptionId>("prCount");
 
   useEffect(() => {
     let cancelled = false;
