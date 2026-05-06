@@ -126,6 +126,18 @@ const SpeakerTube = ({ name, linkedin }: { name: string; linkedin?: string }) =>
   );
 };
 
+const getLinkedinUsername = (url: string) => {
+  try {
+    const parsed = new URL(url.trim());
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    return parts[0] === "in" && parts[1]
+      ? parts[1].toLowerCase()
+      : "";
+  } catch {
+    return "";
+  }
+};
+
 
 export default function Talks(props: { talks: Talk[] }) {
   const [talks, setTalks] = useState<Talk[]>(props.talks);
@@ -147,7 +159,10 @@ export default function Talks(props: { talks: Talk[] }) {
   const [deleting, setDeleting] = useState(false);
 
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const [speakerQuery, setSpeakerQuery] = useState<string | null>(null);
+  const [speakerQuery, setSpeakerQuery] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    return new URLSearchParams(window.location.search).get("speaker");
+  });
 
   const openAdd = () => {
     setEditTalk(null);
@@ -183,14 +198,10 @@ export default function Talks(props: { talks: Talk[] }) {
       return talk.speakers.split(",").some((s, i) => {
         const name = s.trim().toLowerCase();
 
-        const rawLinkedin =
-          talk.speakerLinkedins?.split(",")[i]?.toLowerCase() || "";
-        const username =
-          rawLinkedin.split("linkedin.com/in/")[1]?.split("-")[0] || "";
+        const username = getLinkedinUsername(talk.speakerLinkedins?.split(",")[i] || "");
 
         return (
           name.includes(query) ||
-          name.startsWith(query) ||
           username.startsWith(query)
         );
       });
@@ -372,11 +383,9 @@ export default function Talks(props: { talks: Talk[] }) {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const speaker = params.get("speaker");
+    const value = params.get("speaker");
 
-    if (speaker) {
-      setSpeakerQuery(speaker);
-    }
+    setSpeakerQuery((prev) => (prev === value ? prev : value));
   }, []);
 
   return (
@@ -448,24 +457,29 @@ export default function Talks(props: { talks: Talk[] }) {
             </button>
           ))}
           <div className="w-full flex justify-end items-center mb-6">
-            <input
-              type="text"
-              placeholder="Search speaker"
-              defaultValue={speakerQuery || ""}
-              onChange={(e) => {
-                const value = e.target.value;
+            <label>
+              <input
+                type="text"
+                placeholder="Search speaker"
+                value={speakerQuery ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value;
 
-                const params = new URLSearchParams(window.location.search);
+                  const params = new URLSearchParams(window.location.search);
 
-                if (value) params.set("speaker", value);
-                else params.delete("speaker");
+                  if (value) params.set("speaker", value);
+                  else params.delete("speaker");
 
-                window.history.replaceState({}, "", `?${params.toString()}`);
+                  const queryString = params.toString();
+                  const nextUrl = `${window.location.pathname}${queryString ? `?${queryString}` : ""
+                    }${window.location.hash}`;
+                  window.history.replaceState({}, "", nextUrl)
 
-                setSpeakerQuery(value || null);
-              }}
-              className="px-6 py-4 text-sm rounded-full text-white hover:border border-pbgreen cursor-pointer"
-            />
+                  setSpeakerQuery(value || null);
+                }}
+                className="px-6 py-4 text-sm rounded-full text-white hover:border border-pbgreen cursor-text"
+              />
+            </label>
           </div>
         </motion.div>
 
