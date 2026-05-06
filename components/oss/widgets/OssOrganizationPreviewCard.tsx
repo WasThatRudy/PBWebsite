@@ -37,7 +37,6 @@ export default function OssOrganizationPreviewCard({
           <p className="mt-2 text-xs leading-relaxed text-zinc-500 sm:mt-3 sm:text-sm">
             {formatContributionMeta(
               organization.prCount,
-              organization.commitCount,
             )}
           </p>
         </div>

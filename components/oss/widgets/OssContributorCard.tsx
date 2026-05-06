@@ -19,28 +19,25 @@ export default function OssContributorCard({
           <h3 className="break-words text-lg font-medium text-white sm:text-xl">
             {contributor.name}
           </h3>
-          {contributorUrl ? (
-            <a
-              href={contributorUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-1 block break-words text-sm text-zinc-500 transition-colors hover:text-zinc-300"
-            >
-              {contributor.login
-                ? `@${contributor.login}`
-                : "Point Blank contributor"}
-            </a>
-          ) : (
-            <p className="mt-1 break-words text-sm text-zinc-500">
-              {contributor.login
-                ? `@${contributor.login}`
-                : "Point Blank contributor"}
-            </p>
-          )}
+          {contributor.login && (
+            contributorUrl ? (
+                <a
+                  href={contributorUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-1 block break-words text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+                >
+                @{contributor.login}
+                </a>
+              ) : (
+                <p className="mt-1 break-words text-sm text-zinc-500">
+                 @{contributor.login}
+              </p>
+  )
+)}
           <p className="mt-4 text-sm leading-relaxed text-zinc-400">
             {formatContributionMeta(
               contributor.prCount,
-              contributor.commitCount,
             )}
           </p>
           {contributor.bio && (

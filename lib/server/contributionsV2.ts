@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import connectDB from "@/lib/db/connection";
-import Contribution from "@/lib/db/models/contributions";
+import Contribution from "@/lib/db/models/contributionsV2";
 import Org from "@/lib/db/models/orgs";
 import User from "@/lib/db/models/users";
 import { getOrgTag } from "@/lib/data/orgs";
@@ -272,9 +272,20 @@ export async function getContributorStats(username?: string) {
       { $match: matchStage },
       {
         $group: {
-          _id: "$username",
+          _id: "$memberName", // 🔥 FIXED
+          usernames: { $addToSet: "$username" }, // optional but useful
           memberName: { $first: "$memberName" },
           totalMergedPRs: { $sum: 1 },
+          githubPRs: {
+            $sum: {
+              $cond: [{ $eq: ["$platform", "github"] }, 1, 0],
+            },
+          },
+          gitlabPRs: {
+            $sum: {
+              $cond: [{ $eq: ["$platform", "gitlab"] }, 1, 0],
+            },
+          },
           orgs: { $addToSet: "$orgLogin" },
           platforms: { $addToSet: "$platform" },
         },
@@ -282,10 +293,11 @@ export async function getContributorStats(username?: string) {
       {
         $project: {
           _id: 0,
-          username: "$_id",
+          username: { $arrayElemAt: ["$usernames", 0] }, // pick one
           memberName: 1,
           totalMergedPRs: 1,
-          totalCommits: { $literal: 0 },
+          githubPRs: 1,
+          gitlabPRs: 1,
           orgs: 1,
           platforms: 1,
           totalOrgs: { $size: "$orgs" },
@@ -358,5 +370,23 @@ export async function getContributorStats(username?: string) {
       page,
       limit,
       pages: Math.ceil(total / limit),
+    };
+  }
+  export async function getGlobalStats() {
+    const stats = await Contribution.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalMergedPRs: { $sum: 1 },
+          contributors: { $addToSet: "$memberName" },
+          orgs: { $addToSet: "$orgLogin" },
+        },
+      },
+    ]);
+  
+    return {
+      totalMergedPRs: stats[0]?.totalMergedPRs || 0,
+      totalContributors: stats[0]?.contributors.length || 0,
+      totalOrganizations: stats[0]?.orgs.length || 0,
     };
   }

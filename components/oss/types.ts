@@ -1,8 +1,96 @@
-import type {
-  ContributionTag,
-  NormalizedOssContributor,
-  NormalizedOssOrganization,
-} from "@/lib/oss";
+// ─── API response shapes (new API) ───────────────────────────────────────────
+
+export type ContributionTag = "gsoc" | "lfx" | "both" | "none";
+
+/** GET /api/contributions?view=stats */
+export interface StatsResponse {
+  totalMergedPRs: number;
+  github: number;
+  gitlab: number;
+}
+
+/** One entry from GET /api/contributions?view=orgs */
+export interface OrgEntry {
+  orgLogin: string;
+  totalMergedPRs: number;
+  contributorCount: number;
+  /** GitHub/GitLab usernames */
+  contributors: string[];
+  /** Display names of members */
+  memberNames: string[];
+  platforms: Array<"github" | "gitlab">;
+  orgAvatar?: string;
+  orgUrl?: string;
+  tag: ContributionTag;
+}
+
+/** GET /api/contributions?view=orgs */
+export interface OrgsResponse {
+  data: OrgEntry[];
+}
+
+/** One entry from GET /api/contributions?view=contributors */
+export interface ContributorEntry {
+  username: string;
+  memberName: string;
+  totalMergedPRs: number;
+  totalCommits: number;
+  totalOrgs: number;
+  orgs: string[];
+  platforms: Array<"github" | "gitlab">;
+  tags: ContributionTag[];
+}
+
+/** GET /api/contributions?view=contributors */
+export interface ContributorsResponse {
+  data: ContributorEntry[];
+}
+
+// ─── View-model types (consumed by components) ───────────────────────────────
+
+export interface OssOrganization {
+  id: string;
+  name: string;
+  url?: string;
+  description?: string;
+  tag: ContributionTag;
+  prCount: number;
+  commitCount: number;
+  totalContributions: number;
+  /** Slim contributor references attached to this org */
+  contributors: OssContributorRef[];
+}
+
+export interface OssContributorRef {
+  id: string;
+  name: string;
+  login: string;
+}
+
+export interface OssContributor {
+  id: string;
+  name: string;
+  login?: string;
+  bio?: string;
+  url?: string;
+  prCount: number;
+  totalContributions: number;
+  /** Slim org references attached to this contributor */
+  organizations: OssOrganizationRef[];
+}
+
+export interface OssOrganizationRef {
+  id: string;
+  name: string;
+}
+
+export interface DashboardStats {
+  totalMergedPRs: number;
+  totalOrganizations: number;
+  totalContributors: number;
+}
+
+// ─── Component prop / state types ────────────────────────────────────────────
 
 export type DashboardTab = "dashboard" | "organizations" | "contributors";
 
@@ -19,10 +107,8 @@ export type ContributorSortOptionId =
 
 export type OrganizationTagFilter = "all" | ContributionTag;
 
-export type OrganizationView = NormalizedOssOrganization & {
-  contributors: NormalizedOssContributor[];
-};
+/** Full organization view used in OssOrganizationsPanel / OssOrganizationCard */
+export type OrganizationView = OssOrganization;
 
-export type ContributorView = NormalizedOssContributor & {
-  organizations: NormalizedOssOrganization[];
-};
+/** Full contributor view used in OssContributorsPanel / OssContributorCard */
+export type ContributorView = OssContributor;

@@ -1,28 +1,119 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useLoadingStore } from "@/lib/store/loading";
-import { useOssDashboardData } from "@/hooks/useOssDashboardData";
 import OssHero from "@/components/oss/modules/OssHero";
 import OssOverviewSection from "@/components/oss/modules/OssOverviewSection";
 import OssHighlightsSection from "@/components/oss/modules/OssHighlightsSection";
 import OssOrganizationsPanel from "@/components/oss/modules/OssOrganizationsPanel";
 import OssContributorsPanel from "@/components/oss/modules/OssContributorsPanel";
-import LoadingBrackets from "@/components/ui/LoadingBrackets";
 import { Button } from "@/components/ui/button";
 import type {
   ContributorSortOptionId,
+  ContributorView,
+  DashboardStats,
   DashboardTab,
   OrganizationSortOptionId,
   OrganizationTagFilter,
+  OrganizationView,
+  ContributorsResponse,
+  OrgsResponse,
+  StatsResponse,
 } from "@/components/oss/types";
-import {
-  TABS,
-  matchSearch,
-} from "@/components/oss/utils";
+import { TABS, matchSearch } from "@/components/oss/utils";
+
+// ─── Data fetching & normalization ────────────────────────────────────────────
+
+function buildUrl(endpoint: string, view: "stats" | "orgs" | "contributors") {
+  const sep = endpoint.includes("?") ? "&" : "?";
+  return `${endpoint}${sep}view=${view}`;
+}
+
+interface DashboardData {
+  stats: DashboardStats;
+  organizations: OrganizationView[];
+  contributors: ContributorView[];
+}
+
+async function fetchDashboardData(endpoint: string): Promise<DashboardData> {
+  const [statsRes, orgsRes, contributorsRes] = await Promise.all([
+    fetch(buildUrl(endpoint, "stats")),
+    fetch(buildUrl(endpoint, "orgs")),
+    fetch(buildUrl(endpoint, "contributors")),
+  ]);
+
+  if (!statsRes.ok || !orgsRes.ok || !contributorsRes.ok) {
+    throw new Error("One or more API requests failed. Please try again.");
+  }
+
+  const statsJson: StatsResponse = await statsRes.json();
+  const orgsJson: OrgsResponse = await orgsRes.json();
+  const contributorsJson: ContributorsResponse = await contributorsRes.json();
+
+  // Build a username → memberName lookup from contributors
+  const loginToName = new Map<string, string>(
+    contributorsJson.data.map((c) => [c.username, c.memberName]),
+  );
+
+  // Normalize organizations
+  const organizations: OrganizationView[] = orgsJson.data.map((org) => ({
+    id: org.orgLogin,
+    name: org.orgLogin,
+    url: org.orgUrl,
+    description: undefined,
+    tag: org.tag,
+    prCount: org.totalMergedPRs,
+    // API doesn't expose commits per-org; default to 0
+    commitCount: 0,
+    totalContributions: org.totalMergedPRs,
+    contributors: org.contributors.map((login) => ({
+      id: login,
+      name: loginToName.get(login) ?? login,
+      login,
+    })),
+  }));
+
+  // Build an orgLogin → OssOrganizationRef lookup
+  const orgRefMap = new Map(
+    organizations.map((o) => [o.id, { id: o.id, name: o.name }]),
+  );
+
+  // Normalize contributors
+  const contributors: ContributorView[] = contributorsJson.data.map((c) => ({
+    id: c.memberName,
+    name: c.memberName,
+
+    login: c.username,
+  
+    bio: undefined,
+  
+    url: `https://github.com/${c.username}`,
+  
+    prCount: c.totalMergedPRs,
+    totalContributions: c.totalMergedPRs,
+  
+    organizations: c.orgs.map((orgLogin) =>
+      orgRefMap.get(orgLogin) ?? { id: orgLogin, name: orgLogin },
+    ),
+  }));
+
+  const stats: DashboardStats = {
+    totalMergedPRs: statsJson.totalMergedPRs,
+    totalOrganizations: organizations.length,
+    totalContributors: contributors.length,
+  };
+
+  return { stats, organizations, contributors };
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+type Status = "loading" | "success" | "error";
 
 export default function OssDashboard({ endpoint }: { endpoint: string }) {
-  const setLoading = useLoadingStore((state) => state.setLoading);
+  const [status, setStatus] = useState<Status>("loading");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+
   const [activeTab, setActiveTab] = useState<DashboardTab>("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   const [organizationTag, setOrganizationTag] =
@@ -31,17 +122,36 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
     useState<OrganizationSortOptionId>("totalContributions");
   const [contributorSort, setContributorSort] =
     useState<ContributorSortOptionId>("totalContributions");
-  const { status, errorMessage, data, organizationStats, contributorStats } =
-    useOssDashboardData(endpoint);
 
   useEffect(() => {
-    setLoading(false);
-  }, [setLoading]);
+    let cancelled = false;
+    fetchDashboardData(endpoint)
+      .then((data) => {
+        if (!cancelled) {
+          setDashboardData(data);
+          setStatus("success");
+        }
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) {
+          setErrorMessage(
+            err instanceof Error ? err.message : "Unexpected error.",
+          );
+          setStatus("error");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [endpoint]);
 
   const query = searchQuery.trim().toLowerCase();
 
+  const organizations: OrganizationView[] = dashboardData?.organizations ?? [];
+  const contributors: ContributorView[] = dashboardData?.contributors ?? [];
+
   const filteredAndSortedOrganizations = useMemo(() => {
-    const results = organizationStats.filter((organization) => {
+    const results = organizations.filter((organization) => {
       const matchesTag =
         organizationTag === "all" || organization.tag === organizationTag;
       const matchesQuery = matchSearch(
@@ -50,67 +160,70 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
           organization.url,
           organization.description,
           organization.tag,
-          ...organization.contributors.map((contributor) => contributor.name),
-          ...organization.contributors.map((contributor) => contributor.login),
+          ...organization.contributors.map((c) => c.name),
+          ...organization.contributors.map((c) => c.login),
         ],
         query,
       );
-
       return matchesTag && matchesQuery;
     });
 
-    results.sort((left, right) => {
-      if (orgSort === "totalContributions") {
-        return right.totalContributions - left.totalContributions;
-      }
-      if (orgSort === "prCount") return right.prCount - left.prCount;
-      if (orgSort === "contributors") {
-        return right.contributors.length - left.contributors.length;
-      }
-      return left.name.localeCompare(right.name);
+    results.sort((l, r) => {
+      if (orgSort === "totalContributions")
+        return r.totalContributions - l.totalContributions;
+      if (orgSort === "prCount") return r.prCount - l.prCount;
+      if (orgSort === "contributors")
+        return r.contributors.length - l.contributors.length;
+      return l.name.localeCompare(r.name);
     });
 
     return results;
-  }, [organizationStats, orgSort, organizationTag, query]);
+  }, [organizations, orgSort, organizationTag, query]);
 
   const filteredAndSortedContributors = useMemo(() => {
-    const results = contributorStats.filter((contributor) =>
+    const results = contributors.filter((contributor) =>
       matchSearch(
         [
           contributor.name,
-          contributor.login,
+          contributor.login ?? "",
           contributor.bio,
-          ...contributor.organizations.map((organization) => organization.name),
+          ...contributor.organizations.map((o) => o.name),
         ],
         query,
       ),
     );
 
-    results.sort((left, right) => {
-      if (contributorSort === "totalContributions") {
-        return right.totalContributions - left.totalContributions;
-      }
-      if (contributorSort === "prCount") return right.prCount - left.prCount;
-      return left.name.localeCompare(right.name);
+    results.sort((l, r) => {
+      if (contributorSort === "totalContributions")
+        return r.totalContributions - l.totalContributions;
+      if (contributorSort === "prCount") return r.prCount - l.prCount;
+      return l.name.localeCompare(r.name);
     });
 
     return results;
-  }, [contributorStats, contributorSort, query]);
+  }, [contributors, contributorSort, query]);
 
+  // ── Loading state ──
   if (status === "loading") {
-    return <LoadingBrackets />;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-pbpages">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-[#39FF14]" />
+          <p className="text-sm font-medium text-zinc-500">Loading OSS data…</p>
+        </div>
+      </div>
+    );
   }
 
+  // ── Error state ──
   if (status === "error") {
     return (
       <div className="min-h-screen bg-pbpages px-3 py-6 font-medium text-zinc-300 sm:px-4 sm:py-12">
         <div className="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-[1700px] items-center justify-center sm:min-h-[calc(100vh-11rem)] sm:px-6 lg:px-10 xl:px-[80px]">
           <div className="flex w-full max-w-lg flex-col items-center rounded-[20px] border border-red-400/10 bg-[#1c1c1c] px-4 py-8 text-center shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:rounded-[28px] sm:px-8 sm:py-10">
-            <div className="mb-4 text-red-300">
-              <h2 className="text-center text-2xl font-medium text-white">
-                Failed to load data
-              </h2>
-            </div>
+            <h2 className="mb-4 text-center text-2xl font-medium text-white">
+              Failed to load data
+            </h2>
             <p className="mb-8 max-w-md text-center text-sm leading-relaxed text-zinc-500 sm:text-base">
               {errorMessage}
             </p>
@@ -125,6 +238,9 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
       </div>
     );
   }
+
+  // ── Success state ──
+  const { stats } = dashboardData!;
 
   return (
     <div className="min-h-screen bg-pbpages font-medium text-zinc-300 selection:bg-[#00FF41]/30 selection:text-white">
@@ -151,13 +267,13 @@ export default function OssDashboard({ endpoint }: { endpoint: string }) {
         {activeTab === "dashboard" && (
           <div className="space-y-10">
             <OssOverviewSection
-              totalContributors={data.stats.totalContributors}
-              totalMergedPRs={data.stats.totalMergedPRs}
-              totalOrganizations={data.stats.totalOrganizations}
+              totalContributors={stats.totalContributors}
+              totalMergedPRs={stats.totalMergedPRs}
+              totalOrganizations={stats.totalOrganizations}
             />
             <OssHighlightsSection
-              contributorStats={contributorStats}
-              organizationStats={organizationStats}
+              contributorStats={contributors}
+              organizationStats={organizations}
               onTabChange={setActiveTab}
             />
           </div>

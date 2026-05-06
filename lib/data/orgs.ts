@@ -34,9 +34,11 @@ export async function refreshOrgTagCache(): Promise<void> {
   cacheBuiltAt = Date.now();
 }
 
-export async function getOrgTag(orgLogin: string): Promise<OrgTag> {
-  const map = await getCache();
-  return map.get(orgLogin.toLowerCase()) ?? "none";
+export function getOrgTag(org: string): OrgTag {
+  if (GSOC_ORGS_SEED.includes(org) && LFX_ORGS_SEED.includes(org)) return "both";
+  if (GSOC_ORGS_SEED.includes(org)) return "gsoc";
+  if (LFX_ORGS_SEED.includes(org)) return "lfx";
+  return "none";
 }
 
 // Safe only after cache has been warmed — used inside scrape job

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function OssPage() {
   return (
     <section className="w-full" id="oss">
-      <OssDashboard endpoint="/api/contributions" />
+      <OssDashboard endpoint="/api/contributionsV2" />
     </section>
   );
 }

@@ -71,10 +71,7 @@ export default function OssOrganizationCard({
             <span className="text-xs text-zinc-600">No active contributors</span>
           ) : (
             organization.contributors.map((contributor) => (
-              <Pill
-                key={contributor.id}
-                variant="muted"
-              >
+              <Pill key={contributor.id} variant="muted">
                 {contributorLabel(contributor)}
               </Pill>
             ))

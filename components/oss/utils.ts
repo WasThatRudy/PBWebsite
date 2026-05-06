@@ -1,9 +1,7 @@
 import type {
   ContributionTag,
-  NormalizedOssContributor,
-} from "@/lib/oss";
-import type {
   ContributorSortOptionId,
+  ContributorView,
   DashboardTab,
   OrganizationSortOptionId,
 } from "@/components/oss/types";
@@ -44,17 +42,21 @@ export const ORGANIZATION_TAG_OPTIONS: Array<{
   { id: "none", label: "None" },
 ];
 
-export function matchSearch(values: Array<string | undefined>, query: string) {
+export function matchSearch(values: Array<unknown>, query: string) {
   if (!query) return true;
-  return values.some((value) => value?.toLowerCase().includes(query));
+  return values.some((value) => {
+    if (value == null) return false;
+    if (typeof value !== "string") return false;
+    return value.toLowerCase().includes(query);
+  });
 }
 
-export function contributorLabel(contributor: NormalizedOssContributor) {
+export function contributorLabel(contributor: Pick<ContributorView, "login" | "name">) {
   return contributor.login ? `@${contributor.login}` : contributor.name;
 }
 
 export function getContributorGithubUrl(
-  contributor: Pick<NormalizedOssContributor, "login" | "url">,
+  contributor: Pick<ContributorView, "login" | "url">,
 ) {
   if (contributor.url) return contributor.url;
   if (!contributor.login) return undefined;
@@ -83,6 +85,6 @@ export function formatTagLabel(tag: ContributionTag) {
   return "None";
 }
 
-export function formatContributionMeta(prs: number, commits: number) {
-  return `${prs} PRs • ${commits} commits`;
+export function formatContributionMeta(prs: number) {
+  return `${prs} PRs`;
 }
