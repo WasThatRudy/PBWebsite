@@ -147,7 +147,7 @@ export default function Talks(props: { talks: Talk[] }) {
   const [deleting, setDeleting] = useState(false);
 
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
-
+  const [speakerQuery, setSpeakerQuery] = useState<string | null>(null);
 
   const openAdd = () => {
     setEditTalk(null);
@@ -174,9 +174,32 @@ export default function Talks(props: { talks: Talk[] }) {
   };
 
 
-  const filteredTalks = (activeTab === "all" ? talks : talks.filter((t) => t.type === activeTab))
-    .slice()
-    .sort((a, b) => Number(new Date(b.date)) - Number(new Date(a.date)));
+  const filteredTalks =
+    (activeTab === "all" ? talks : talks.filter((t) => t.type === activeTab)).filter((talk) => {
+      if (!speakerQuery) return true;
+
+      const query = speakerQuery.toLowerCase();
+
+      return talk.speakers.split(",").some((s, i) => {
+        const name = s.trim().toLowerCase();
+
+        const rawLinkedin =
+          talk.speakerLinkedins?.split(",")[i]?.toLowerCase() || "";
+        const username =
+          rawLinkedin.split("linkedin.com/in/")[1]?.split("-")[0] || "";
+
+        return (
+          name.includes(query) ||
+          name.startsWith(query) ||
+          username.startsWith(query)
+        );
+      });
+    })
+      .slice()
+      .sort(
+        (a, b) => Number(new Date(b.date)) - Number(new Date(a.date))
+      );
+
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -347,6 +370,15 @@ export default function Talks(props: { talks: Talk[] }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [filteredTalks.length]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const speaker = params.get("speaker");
+
+    if (speaker) {
+      setSpeakerQuery(speaker);
+    }
+  }, []);
+
   return (
     <section className="rounded-xl text-white py-8 md:py-12 text-lexend-300 min-h-xl">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-10 lg:px-20 py-12 text-center">
@@ -415,6 +447,26 @@ export default function Talks(props: { talks: Talk[] }) {
               {tab === "all" ? "All" : tab}
             </button>
           ))}
+          <div className="w-full flex justify-end items-center mb-6">
+            <input
+              type="text"
+              placeholder="Search speaker"
+              defaultValue={speakerQuery || ""}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                const params = new URLSearchParams(window.location.search);
+
+                if (value) params.set("speaker", value);
+                else params.delete("speaker");
+
+                window.history.replaceState({}, "", `?${params.toString()}`);
+
+                setSpeakerQuery(value || null);
+              }}
+              className="px-6 py-4 text-sm rounded-full text-white hover:border border-pbgreen cursor-pointer"
+            />
+          </div>
         </motion.div>
 
         {/* Talks list */}
