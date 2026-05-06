@@ -58,7 +58,6 @@ export default function OssOrganizationCard({
       <p className="mb-5 text-sm leading-relaxed text-zinc-400">
         {formatContributionMeta(
           organization.prCount,
-          organization.commitCount,
         )}
       </p>
 

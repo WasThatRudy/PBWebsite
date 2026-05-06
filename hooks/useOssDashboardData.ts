@@ -115,11 +115,18 @@ export function useOssDashboardData(endpoint: string) {
       (organization) => ({
         ...organization,
         contributors: organization.contributorIds
-          .map((contributorId) => contributorsById.get(contributorId))
-          .filter(
-            (contributor): contributor is NormalizedOssContributor =>
-              Boolean(contributor),
-          ),
+        .map((contributorId) => {
+        const contributor = contributorsById.get(contributorId);
+
+        if (!contributor) return null;
+
+    return {
+      id: contributor.id,
+      name: contributor.name,
+      login: contributor.login ?? contributor.id, // 🔥 FIX
+    };
+  })
+  .filter((c): c is { id: string; name: string; login: string } => Boolean(c)),
       }),
     );
 

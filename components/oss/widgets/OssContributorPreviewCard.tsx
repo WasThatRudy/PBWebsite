@@ -40,7 +40,6 @@ export default function OssContributorPreviewCard({
           <p className="mt-2 text-xs leading-relaxed text-zinc-500 sm:mt-3 sm:text-sm">
             {formatContributionMeta(
               contributor.prCount,
-              contributor.commitCount,
             )}
           </p>
         </div>
