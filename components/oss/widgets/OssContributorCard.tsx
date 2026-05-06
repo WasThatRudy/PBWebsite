@@ -11,7 +11,8 @@ export default function OssContributorCard({
   contributor: ContributorView;
 }) {
   const contributorUrl = getContributorGithubUrl(contributor);
-
+  const visibleOrgs = contributor.organizations.slice(0, 5);
+  const remainingOrgs = contributor.organizations.slice(5);
   return (
     <div className="rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5 md:p-6">
       <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">
@@ -52,19 +53,46 @@ export default function OssContributorCard({
             Organizations
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {contributor.organizations.length === 0 ? (
-              <span className="text-xs text-zinc-600">No orgs yet</span>
-            ) : (
-              contributor.organizations.map((organization) => (
-                <Pill
-                  key={organization.id}
-                  className="max-w-[160px]"
-                  variant="muted"
-                >
-                  <span className="truncate">{organization.name}</span>
-                </Pill>
-              ))
-            )}
+          {contributor.organizations.length === 0 ? (
+  <span className="text-xs text-zinc-600">No orgs yet</span>
+) : (
+  <>
+    {visibleOrgs.map((organization) => (
+      <Pill
+        key={organization.id}
+        className="max-w-[160px]"
+        variant="muted"
+      >
+        <span className="truncate">{organization.name}</span>
+      </Pill>
+    ))}
+
+    {remainingOrgs.length > 0 && (
+      <div className="relative group">
+        <Pill
+          className="cursor-pointer font-medium"
+          variant="muted"
+        >
+          +{remainingOrgs.length} more
+        </Pill>
+
+        {/* Hover dropdown */}
+        <div className="absolute left-0 top-full z-20 mt-2 w-[220px] rounded-lg bg-[#111] p-3 shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition">
+          <div className="flex flex-col gap-1">
+            {remainingOrgs.map((org) => (
+              <span
+                key={org.id}
+                className="text-xs text-zinc-400"
+              >
+                {org.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+  </>
+)}
           </div>
         </div>
       </div>
