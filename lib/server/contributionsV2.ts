@@ -3,7 +3,9 @@ import connectDB from "@/lib/db/connection";
 import Contribution from "@/lib/db/models/contributionsV2";
 import Org from "@/lib/db/models/orgs";
 import User from "@/lib/db/models/users";
-import { getOrgTag } from "@/lib/data/orgs";
+//import { getOrgTag } from "@/lib/data/orgs";
+import { refreshOrgTagCache } from "@/lib/data/orgs";
+import { getOrgTagSync } from "@/lib/data/orgs";
 import {
   fetchGitHubMergedPRs,
   clearGitHubCaches,
@@ -106,6 +108,7 @@ export async function runScrapeJob(options: {
   incremental?: boolean;
   memberFilter?: string[];
 } = {}) {
+    await refreshOrgTagCache(); 
   await connectDB();
   clearGitHubCaches();
 
@@ -252,7 +255,7 @@ export async function getOrgBreakdown(tagFilter?: string) {
 
   const tagged = result.map((org: any) => ({
     ...org,
-    tag: getOrgTag(org.orgLogin),
+    tag: getOrgTagSync(org.orgLogin),
   }));
 
   if (tagFilter) {
@@ -308,7 +311,7 @@ export async function getContributorStats(username?: string) {
   
     return result.map((user: any) => ({
       ...user,
-      tags: user.orgs.map((org: string) => getOrgTag(org)),
+      tags: user.orgs.map((org: string) => getOrgTagSync(org)),
     }));
   }
   export async function getMemberPRs(options: {
@@ -361,7 +364,7 @@ export async function getContributorStats(username?: string) {
   
     const tagged = data.map((d: any) => ({
       ...d,
-      tag: getOrgTag(d.orgLogin),
+      tag: getOrgTagSync(d.orgLogin),
     }));
   
     return {
@@ -399,7 +402,7 @@ export async function getContributorStats(username?: string) {
     let updatedCount = 0;
   
     for (const doc of contributions) {
-      const newTag = getOrgTag(doc.orgLogin); // 👈 your existing logic
+      const newTag = getOrgTagSync(doc.orgLogin); // 👈 your existing logic
   
       const res = await Contribution.updateOne(
         { _id: doc._id },
