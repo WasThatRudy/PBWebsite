@@ -208,15 +208,25 @@ async function fetchPRsForOrg(
 
   // Fetch org metadata for avatar / html_url display fields
   let orgAvatarUrl = "";
-  let orgHtmlUrl   = `https://github.com/${orgLogin}`;
-  try {
-    const { data } = await octokit.rest.orgs.get({ org: orgLogin });
-    orgAvatarUrl = data.avatar_url;
-    orgHtmlUrl   = data.html_url;
-    orgCache.set(orgLogin, { login: data.login, public_repos: data.public_repos, followers: data.followers });
-  } catch {
-    // Org might be a user account (not an org) — non-fatal, keep going.
-  }
+let orgHtmlUrl   = `https://github.com/${orgLogin}`;
+
+try {
+  const { data } = await octokit.rest.orgs.get({ org: orgLogin });
+
+  orgAvatarUrl = data.avatar_url || "";
+
+  orgHtmlUrl = data.html_url || `https://github.com/${orgLogin}`;
+
+  orgCache.set(orgLogin, {
+    login: data.login,
+    public_repos: data.public_repos,
+    followers: data.followers,
+  });
+
+} catch(err: any) {
+  //Eat 5 star do nothing!
+  console.warn(`[GitHub/org] Failed to fetch org ${orgLogin}: ${err?.message}`);
+}
 
   const sinceStr = since ? since.toISOString().split("T")[0] : "2019-01-01";
 
@@ -228,6 +238,7 @@ async function fetchPRsForOrg(
       per_page: 100,
     });
 
+    orgHtmlUrl = orgHtmlUrl || `https://github.com/${orgLogin}`;
     for await (const page of iterator) {
       for (const pr of page.data) {
         if (seenUrls.has(pr.html_url)) continue;
@@ -237,7 +248,6 @@ async function fetchPRsForOrg(
         if (!mergedAt) continue;
 
         const repoFullName = pr.repository_url.replace("https://api.github.com/repos/", "");
-
         results.push({
           memberName,
           username,
