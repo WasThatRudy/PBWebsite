@@ -12,7 +12,7 @@ export default function OssSearchInput({
         placeholder="search"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-full bg-[#111111] px-4 py-2.5 text-sm font-medium text-white outline-none sm:px-6 sm:py-3"
+        className="h-[42px] w-full rounded-full border border-transparent bg-[#222222] px-5 py-3 text-xs/relaxed font-medium text-white outline-none"
       />
     </div>
   );
