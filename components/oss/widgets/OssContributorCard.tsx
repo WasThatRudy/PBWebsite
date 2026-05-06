@@ -68,7 +68,7 @@ export default function OssContributorCard({
     ))}
 
     {remainingOrgs.length > 0 && (
-      <div className="relative group">
+      <div className="relative group inline-block">
         <Pill
           className="cursor-pointer font-medium"
           variant="muted"
@@ -77,17 +77,8 @@ export default function OssContributorCard({
         </Pill>
 
         {/* Hover dropdown */}
-        <div className="absolute left-0 top-full z-20 mt-2 w-[220px] rounded-lg bg-[#111] p-3 shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition">
-          <div className="flex flex-col gap-1">
-            {remainingOrgs.map((org) => (
-              <span
-                key={org.id}
-                className="text-xs text-zinc-400"
-              >
-                {org.name}
-              </span>
-            ))}
-          </div>
+        <div className="absolute left-1/2 -translate-x-1/2 top-full z-50 mt-2 min-w-[200px] max-w-[400px] rounded-lg bg-[#111] px-3 py-2 text-xs text-zinc-400 shadow-xl opacity-0 invisible group-hover:visible group-hover:opacity-100 transition whitespace-normal">
+        {remainingOrgs.map((org) => org.name).join(", ")}
         </div>
       </div>
     )}
