@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import connectDB from "@/lib/db/connection";
 import Contribution from "@/lib/db/models/contributionsV2";
-import Org from "@/lib/db/models/orgs";
+import Org from "@/lib/db/models/orgsV2";
 import User from "@/lib/db/models/users";
 //import { getOrgTag } from "@/lib/data/orgs";
 import { refreshOrgTagCache } from "@/lib/data/orgs";
@@ -64,19 +64,20 @@ async function saveContributions(
   }
 
   // Save orgs
-  for (const org of orgsMap.values()) {
-    await Org.findOneAndUpdate(
-      { login: org.login.toLowerCase()},
-      {
-        $set: {
-          avatarUrl: org.avatarUrl,
-          htmlUrl: org.htmlUrl,
-          lastFetched: new Date(),
-        },
-      },
-      { upsert: true }
-    );
-  }
+for (const org of orgsMap.values()) {
+  const update: Record<string, any> = {
+    platform: org.platform,
+    lastFetched: new Date(),
+  };
+  if (org.avatarUrl) update.avatarUrl = org.avatarUrl;
+  if (org.htmlUrl)   update.htmlUrl   = org.htmlUrl;
+
+  await Org.findOneAndUpdate(
+    { login: org.login.toLowerCase(), platform: org.platform },
+    { $set: update },
+    { upsert: true }
+  );
+}
 
   for (const c of contributions) {
     await Contribution.findOneAndUpdate(
@@ -91,6 +92,7 @@ async function saveContributions(
           title: c.title,
           url: c.url,
           mergedAt: c.mergedAt,
+          tag:getOrgTagSync(c.orgLogin),
           scrapedAt: new Date(),
         },
       },
@@ -231,7 +233,7 @@ export async function getOrgBreakdown(tagFilter?: string) {
     },
     {
       $lookup: {
-        from: "orgs",
+        from: "orgs_v2",
         localField: "_id",
         foreignField: "login",
         as: "orgDetails",
