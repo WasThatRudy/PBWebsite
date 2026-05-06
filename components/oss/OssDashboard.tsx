@@ -79,7 +79,7 @@ async function fetchDashboardData(endpoint: string): Promise<DashboardData> {
 
   // Build an orgLogin → OssOrganizationRef lookup
   const orgRefMap = new Map(
-    organizations.map((o) => [o.id, { id: o.id, name: o.name }]),
+    organizations.map((o) => [o.id, { id: o.id, name: o.name, prCount: o.prCount }]),
   );
 
   // Normalize contributors

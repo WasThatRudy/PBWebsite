@@ -82,6 +82,7 @@ export interface OssContributor {
 export interface OssOrganizationRef {
   id: string;
   name: string;
+  prCount?: number;
 }
 
 export interface DashboardStats {

@@ -19,8 +19,8 @@ export default function OssOrganizationPreviewCard({
   );
 
   return (
-    <div className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:min-h-[172px] sm:rounded-[20px] sm:p-5">
-      <div className="flex flex-col gap-4">
+    <div className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:min-h-[196px] sm:rounded-[20px] sm:p-5">
+      <div className="flex h-full flex-col gap-4">
         <div className="min-w-0">
           <span className="block break-words font-medium text-base text-white sm:text-lg">
             {organization.name}
@@ -41,7 +41,7 @@ export default function OssOrganizationPreviewCard({
             )}
           </p>
         </div>
-        <div className="flex min-h-[32px] flex-wrap items-center gap-1.5">
+        <div className="mt-auto flex min-h-[56px] flex-wrap content-start items-center gap-1.5">
           {SHOW_ORGANIZATION_TAGS && (
             <Pill
               className="font-medium uppercase tracking-[0.18em]"

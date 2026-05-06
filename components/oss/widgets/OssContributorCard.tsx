@@ -1,9 +1,6 @@
 import type { ContributorView } from "@/components/oss/types";
 import { Pill } from "@/components/ui/Pill";
-import {
-  formatContributionMeta,
-  getContributorGithubUrl,
-} from "@/components/oss/utils";
+import { formatContributionMeta, getContributorGithubUrl } from "@/components/oss/utils";
 
 export default function OssContributorCard({
   contributor,
@@ -11,8 +8,24 @@ export default function OssContributorCard({
   contributor: ContributorView;
 }) {
   const contributorUrl = getContributorGithubUrl(contributor);
-  const visibleOrgs = contributor.organizations.slice(0, 5);
-  const remainingOrgs = contributor.organizations.slice(5);
+  const shouldHideAdeiOrg =
+    (contributor.login?.toLowerCase() === "saniyafatima07"
+      || contributor.name.trim().toLowerCase() === "saniya fatima");
+  const sortedOrganizations = contributor.organizations
+    .filter(
+      (organization) =>
+        !(
+          shouldHideAdeiOrg
+          && organization.name.trim().toLowerCase() === "adeyosemanputra"
+        ),
+    )
+    .sort(
+      (left, right) =>
+        (right.prCount ?? 0) - (left.prCount ?? 0) ||
+        left.name.localeCompare(right.name),
+  );
+  const visibleOrgs = sortedOrganizations.slice(0, 5);
+  const remainingOrgs = sortedOrganizations.slice(5);
   return (
     <div className="rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5 md:p-6">
       <div className="flex flex-col gap-4 sm:gap-5 md:gap-6">

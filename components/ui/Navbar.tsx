@@ -249,6 +249,7 @@ export default function Navbar() {
                   alt="Logo - Point Blank"
                   className="scale-150"
                   draggable={false}
+                  loading="eager"
                 />
               </Link>
               <div className="hidden lg:flex items-center gap-2">
