@@ -35,11 +35,13 @@ const Card: React.FC<CardProps> = ({
   const hasImage = imageUrl;
   return (
     <div
-      className={`relative touch-manipulation w-full group cursor-pointer ${
-        !hasImage ? "h-fit" : ""
+      className={`relative touch-manipulation w-full max-w-[299px] mx-auto group ${
+        !hasImage ? "h-fit cursor-pointer" : "h-full"
       }`}
       style={{ perspective: "1000px" }}
-      onClick={() => onFlip?.()}
+      onClick={() => {
+        if (!hasImage) onFlip?.();
+      }}
     >
       {isAdmin && (
         <div className="absolute top-2 right-2 z-50 flex gap-1.5">
@@ -96,7 +98,7 @@ const Card: React.FC<CardProps> = ({
         }`}
       >
         <div
-          className={`relative flex flex-col w-full rounded-3xl border border-pbborder hover:border-pbgreen bg-pbpages p-3 backface-hidden ${
+          className={`relative flex flex-col w-full h-full rounded-[48px] border border-pbborder hover:border-pbgreen bg-pbpages pt-[18px] pb-[19px] px-[18px] gap-[19px] items-center justify-start backface-hidden transition-colors ${
             isFlipped && !hasImage ? "border-pbgreen" : ""
           }`}
           style={{
@@ -105,14 +107,17 @@ const Card: React.FC<CardProps> = ({
           }}
         >
           {hasImage && (
-            <div className="relative w-full aspect-square perspective-[1000px] shrink-0">
+            <div 
+              className="relative w-full aspect-[263/250] max-w-[263px] mx-auto perspective-[1000px] shrink-0 drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)] cursor-pointer"
+              onClick={() => onFlip?.()}
+            >
               <div
                 className={`relative w-full h-full transition-all duration-700 transform-3d ${
                   isFlipped ? "transform-[rotateY(180deg)]" : ""
                 }`}
               >
                 <div
-                  className="absolute inset-0 z-10 overflow-hidden rounded-2xl backface-hidden"
+                  className="absolute inset-0 z-10 overflow-hidden rounded-[30px] backface-hidden"
                   style={{
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
@@ -134,7 +139,7 @@ const Card: React.FC<CardProps> = ({
                 </div>
 
                 <div
-                  className="absolute inset-0 w-full h-full backface-hidden transform-[rotateY(180deg)] rounded-2xl border border-pbborder bg-pbpages p-4 flex flex-col items-center justify-center text-center z-20"
+                  className="absolute inset-0 w-full h-full backface-hidden transform-[rotateY(180deg)] rounded-[30px] border border-white/50 bg-pbpages p-4 flex flex-col items-center justify-center text-center z-20"
                   style={{
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
@@ -149,8 +154,8 @@ const Card: React.FC<CardProps> = ({
                         e.stopPropagation();
                       }}
                     >
-                      <div className="hover:scale-110 transition-transform mb-2">
-                        <LinkedIn className="h-8 w-8 text-pbgreen" />
+                      <div className="mb-2">
+                        <LinkedIn className="h-8 w-8 text-pbgreen hover:text-white transition-colors" />
                       </div>
                     </a>
                   )}
@@ -165,12 +170,8 @@ const Card: React.FC<CardProps> = ({
             </div>
           )}
 
-          <div
-            className={`flex flex-col items-center justify-center gap-1.5 w-full mb-1 ${
-              hasImage ? "mt-3" : "mt-2"
-            }`}
-          >
-            <span className="text-pbgreen font-light whitespace-nowrap bg-pbdarkgray w-fit h-fit text-center rounded-full px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base border border-pbborder capitalize">
+          <div className="flex flex-col items-center gap-[24px] w-full relative z-30 flex-1 justify-center">
+            <span className="text-pbgreen font-light whitespace-normal break-words bg-[#1A1A1A] w-fit h-fit text-center rounded-[68px] px-[16px] py-[6px] text-base sm:text-[19px] leading-tight sm:leading-[28px] border border-[#262626] capitalize max-w-full">
               {name}
             </span>
 
@@ -184,7 +185,7 @@ const Card: React.FC<CardProps> = ({
 
         {!hasImage && (
           <div
-            className="absolute inset-0 w-full h-full backface-hidden transform-[rotateY(180deg)] rounded-3xl border border-pbgreen bg-pbpages p-6 flex flex-col items-center justify-center text-center"
+            className="absolute inset-0 w-full h-full backface-hidden transform-[rotateY(180deg)] rounded-[48px] border border-pbgreen bg-pbpages p-6 flex flex-col items-center justify-center text-center"
             style={{
               backfaceVisibility: "hidden",
               WebkitBackfaceVisibility: "hidden",
@@ -199,8 +200,8 @@ const Card: React.FC<CardProps> = ({
                         e.stopPropagation();
                       }}
                     >
-              <div className="hover:scale-110 transition-transform mb-4">
-                <LinkedIn className="h-10 w-10 text-pbgreen" />
+              <div className="mb-4">
+                <LinkedIn className="h-10 w-10 text-pbgreen hover:text-white transition-colors" />
               </div>
               </a>
             )}
