@@ -234,8 +234,10 @@ export async function getOrgBreakdown(tagFilter?: string) {
     {
       $lookup: {
         from: "orgs_v2",
-        localField: "_id",
-        foreignField: "login",
+        let: { orgLogin: { $toLower: "$_id" } },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$login", "$$orgLogin"] } } },
+        ],
         as: "orgDetails",
       },
     },
