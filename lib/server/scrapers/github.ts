@@ -123,7 +123,17 @@ async function isValidOSS(
   username: string,
   customOrgLogins: Set<string>,
 ): Promise<OSSCheckResult> {
+
+  if (repo.owner.login.toLowerCase() === username.toLowerCase()) {
+    return {
+      valid: false,
+      reason: "own-repo",
+      effectiveRepo: repo,
+    };
+  }
+
   let effective = repo;
+
   if (repo.fork) {
     const upstream = await resolveUpstream(octokit, repo);
     if (upstream) effective = upstream;
@@ -131,31 +141,60 @@ async function isValidOSS(
 
   const orgLogin = effective.owner.login;
 
-  if (effective.private)                                 return { valid: false, reason: "private",  effectiveRepo: effective };
-  if (orgLogin.toLowerCase() === username.toLowerCase()) return { valid: false, reason: "own-repo", effectiveRepo: effective };
-
-  // Tier 0 — explicitly listed by the member in their DB record
-  if (customOrgLogins.has(orgLogin.toLowerCase()))       return { valid: true, effectiveRepo: effective };
-
-  // Tier 1 — known program org (GSoC / LFX etc.)
-  if (getOrgTagSync(orgLogin) !== "none")                return { valid: true, effectiveRepo: effective };
-
-  // Tier 2 — established GitHub Organisation
-  if (effective.owner.type === "Organization") {
-    const orgDetails = await getOrgDetails(octokit, orgLogin);
-    if (orgDetails && orgDetails.public_repos >= 5 && orgDetails.followers >= 20) return { valid: true, effectiveRepo: effective };
-    if (effective.stargazers_count >= 50)               return { valid: true, effectiveRepo: effective };
+  if (effective.private) {
+    return {
+      valid: false,
+      reason: "private",
+      effectiveRepo: effective,
+    };
   }
 
-  // Tier 3 — popular user-owned repo
-  // if (effective.owner.type !== "Organization") {
-  //   if (effective.stargazers_count >= 50)               return { valid: true, effectiveRepo: effective };
-  //   return { valid: false, reason: "user-owned-low-stars", effectiveRepo: effective };
-  // }
+  if (orgLogin.toLowerCase() === username.toLowerCase()) {
+    return {
+      valid: false,
+      reason: "own-repo",
+      effectiveRepo: effective,
+    };
+  }
 
-  return { valid: false, reason: "low-signal", effectiveRepo: effective };
+  if (customOrgLogins.has(orgLogin.toLowerCase())) {
+    return {
+      valid: true,
+      effectiveRepo: effective,
+    };
+  }
+
+  if (getOrgTagSync(orgLogin) !== "none") {
+    return {
+      valid: true,
+      effectiveRepo: effective,
+    };
+  }
+
+  if (effective.owner.type === "Organization") {
+    const orgDetails = await getOrgDetails(octokit, orgLogin);
+
+    if (orgDetails && orgDetails.public_repos >= 5 && orgDetails.followers >= 20) {
+      return {
+        valid: true,
+        effectiveRepo: effective,
+      };
+    }
+
+    if (effective.stargazers_count >= 50) {
+      return {
+        valid: true,
+        effectiveRepo: effective,
+      };
+    }
+  }
+
+  return {
+    valid: false,
+    reason: "low-signal",
+    effectiveRepo: effective,
+  };
 }
-
 //Date helpers
 
 function buildDateRanges(since: Date | undefined): Array<{ from: string; to: string }> {
