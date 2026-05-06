@@ -148,10 +148,10 @@ async function isValidOSS(
   }
 
   // Tier 3 — popular user-owned repo
-  if (effective.owner.type !== "Organization") {
-    if (effective.stargazers_count >= 50)               return { valid: true, effectiveRepo: effective };
-    return { valid: false, reason: "user-owned-low-stars", effectiveRepo: effective };
-  }
+  // if (effective.owner.type !== "Organization") {
+  //   if (effective.stargazers_count >= 50)               return { valid: true, effectiveRepo: effective };
+  //   return { valid: false, reason: "user-owned-low-stars", effectiveRepo: effective };
+  // }
 
   return { valid: false, reason: "low-signal", effectiveRepo: effective };
 }
