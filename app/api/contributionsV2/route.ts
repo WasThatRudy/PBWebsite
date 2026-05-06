@@ -66,12 +66,14 @@ import {
 import connectDB from "@/lib/db/connection";
 import Contribution from "@/lib/db/models/contributionsV2";
 import type { OrgTag } from "@/lib/data/orgs";
+import { ensureOrgTagCache } from "@/lib/data/orgs";
 
 const VALID_TAGS      = new Set<OrgTag>(["gsoc", "lfx", "both", "none"]);
 const VALID_VIEWS     = new Set(["orgs", "stats", "contributors", "prs", "user"]);
 const VALID_PLATFORMS = new Set(["github", "gitlab"]);
 
 export async function GET(req: NextRequest) {
+    await ensureOrgTagCache();
   try {
     const { searchParams } = new URL(req.url);
     const view = searchParams.get("view");
