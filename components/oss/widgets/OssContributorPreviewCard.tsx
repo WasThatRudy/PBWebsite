@@ -1,6 +1,10 @@
 import type { ContributorView } from "@/components/oss/types";
 import { Pill } from "@/components/ui/Pill";
-import { formatContributionMeta, getContributorGithubUrl } from "@/components/oss/utils";
+import {
+  formatContributionMeta,
+  getContributorGithubUrl,
+  getOrganizationGithubUrl,
+} from "@/components/oss/utils";
 
 export default function OssContributorPreviewCard({
   contributor,
@@ -29,8 +33,8 @@ export default function OssContributorPreviewCard({
   const remainingCount = remainingOrganizations.length;
 
   return (
-    <div className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:min-h-[196px] sm:rounded-[20px] sm:p-5">
-      <div className="flex h-full flex-col gap-4">
+    <div className="w-full rounded-[16px] bg-[#1c1c1c] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:rounded-[20px] sm:p-5">
+      <div className="flex flex-col gap-4">
         <div className="min-w-0 text-left">
           <span className="block break-words font-medium text-base leading-tight text-white sm:text-lg">
             {contributor.name}
@@ -59,7 +63,7 @@ export default function OssContributorPreviewCard({
             )}
           </p>
         </div>
-        <div className="mt-auto flex min-h-[56px] flex-wrap content-start items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           {sortedOrganizations.length === 0 ? (
             <Pill
               className="font-medium uppercase tracking-[0.14em]"
@@ -71,13 +75,24 @@ export default function OssContributorPreviewCard({
           ) : (
             <>
               {visibleOrganizations.map((organization) => (
-                <Pill
+                <a
                   key={organization.id}
-                  className="max-w-[140px]"
-                  variant="muted"
+                  href={getOrganizationGithubUrl(
+                    organization.name,
+                    organization.url,
+                    organization.platform,
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="transition-transform hover:-translate-y-0.5"
                 >
-                  <span className="truncate">{organization.name}</span>
-                </Pill>
+                  <Pill
+                    className="max-w-[140px]"
+                    variant="muted"
+                  >
+                    <span className="truncate">{organization.name}</span>
+                  </Pill>
+                </a>
               ))}
               {remainingCount > 0 && (
                 <div className="group relative inline-block">
@@ -88,8 +103,24 @@ export default function OssContributorPreviewCard({
                   >
                     +{remainingCount} More
                   </Pill>
-                  <div className="invisible absolute left-1/2 top-full z-50 mt-2 min-w-[220px] max-w-[360px] -translate-x-1/2 rounded-lg bg-[#111] px-3 py-2 text-xs leading-relaxed text-zinc-400 opacity-0 shadow-xl transition group-hover:visible group-hover:opacity-100">
-                    {remainingOrganizations.map((organization) => organization.name).join(", ")}
+                  <div className="invisible absolute left-1/2 top-full z-50 mt-2 flex w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-wrap gap-1.5 rounded-lg bg-[#111] p-2 opacity-0 shadow-xl transition group-hover:visible group-hover:opacity-100 sm:max-w-[320px]">
+                    {remainingOrganizations.map((organization) => (
+                      <a
+                        key={organization.id}
+                        href={getOrganizationGithubUrl(
+                          organization.name,
+                          organization.url,
+                          organization.platform,
+                        )}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="transition-transform hover:-translate-y-0.5"
+                      >
+                        <Pill size="compact" variant="muted">
+                          {organization.name}
+                        </Pill>
+                      </a>
+                    ))}
                   </div>
                 </div>
               )}

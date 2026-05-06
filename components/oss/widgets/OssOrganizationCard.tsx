@@ -4,6 +4,7 @@ import {
   contributorLabel,
   formatContributionMeta,
   formatTagLabel,
+  getContributorGithubUrl,
   getOrganizationGithubUrl,
   SHOW_ORGANIZATION_TAGS,
 } from "@/components/oss/utils";
@@ -70,9 +71,17 @@ export default function OssOrganizationCard({
             <span className="text-xs text-zinc-600">No active contributors</span>
           ) : (
             organization.contributors.map((contributor) => (
-              <Pill key={contributor.id} variant="muted">
-                {contributorLabel(contributor)}
-              </Pill>
+              <a
+                key={contributor.id}
+                href={getContributorGithubUrl(contributor)}
+                target="_blank"
+                rel="noreferrer"
+                className="transition-transform hover:-translate-y-0.5"
+              >
+                <Pill variant="muted">
+                  {contributorLabel(contributor)}
+                </Pill>
+              </a>
             ))
           )}
         </div>

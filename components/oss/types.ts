@@ -1,6 +1,7 @@
 // ─── API response shapes (new API) ───────────────────────────────────────────
 
 export type ContributionTag = "gsoc" | "lfx" | "both" | "none";
+export type ContributionPlatform = "github" | "gitlab";
 
 /** GET /api/contributions?view=stats */
 export interface StatsResponse {
@@ -18,7 +19,7 @@ export interface OrgEntry {
   contributors: string[];
   /** Display names of members */
   memberNames: string[];
-  platforms: Array<"github" | "gitlab">;
+  platforms: ContributionPlatform[];
   orgAvatar?: string;
   orgUrl?: string;
   tag: ContributionTag;
@@ -37,7 +38,7 @@ export interface ContributorEntry {
   totalCommits: number;
   totalOrgs: number;
   orgs: string[];
-  platforms: Array<"github" | "gitlab">;
+  platforms: ContributionPlatform[];
   tags: ContributionTag[];
 }
 
@@ -52,6 +53,7 @@ export interface OssOrganization {
   id: string;
   name: string;
   url?: string;
+  platform?: ContributionPlatform;
   description?: string;
   tag: ContributionTag;
   prCount: number;
@@ -65,6 +67,8 @@ export interface OssContributorRef {
   id: string;
   name: string;
   login: string;
+  url?: string;
+  platform?: ContributionPlatform;
 }
 
 export interface OssContributor {
@@ -73,6 +77,7 @@ export interface OssContributor {
   login?: string;
   bio?: string;
   url?: string;
+  platform?: ContributionPlatform;
   prCount: number;
   totalContributions: number;
   /** Slim org references attached to this contributor */
@@ -83,6 +88,8 @@ export interface OssOrganizationRef {
   id: string;
   name: string;
   prCount?: number;
+  url?: string;
+  platform?: ContributionPlatform;
 }
 
 export interface DashboardStats {

@@ -5,6 +5,7 @@ import type {
 import { CONTRIBUTOR_SORT_OPTIONS } from "@/components/oss/utils";
 import OssContributorCard from "@/components/oss/widgets/OssContributorCard";
 import OssFilterGroup from "@/components/oss/widgets/OssFilterGroup";
+import OssFilterMenu from "@/components/oss/widgets/OssFilterMenu";
 import OssSearchInput from "@/components/oss/widgets/OssSearchInput";
 
 export default function OssContributorsPanel({
@@ -26,17 +27,29 @@ export default function OssContributorsPanel({
         <h2 className="shrink-0 text-2xl font-medium text-white sm:text-3xl">
           Meet the Contributors
         </h2>
-        <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto md:justify-end">
+        <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto md:items-start md:justify-end">
           <OssSearchInput
             value={searchQuery}
             onChange={onSearchQueryChange}
           />
-          <OssFilterGroup
-            activeId={contributorSort}
-            options={CONTRIBUTOR_SORT_OPTIONS}
-            onChange={onContributorSortChange}
-            className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-end"
-          />
+          <OssFilterMenu>
+            {({ close }) => (
+              <div>
+                <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500">
+                  Sort By
+                </p>
+                <OssFilterGroup
+                  activeId={contributorSort}
+                  options={CONTRIBUTOR_SORT_OPTIONS}
+                  onChange={(value) => {
+                    onContributorSortChange(value);
+                    close();
+                  }}
+                  className="grid grid-cols-2 gap-2"
+                />
+              </div>
+            )}
+          </OssFilterMenu>
         </div>
       </div>
 
