@@ -62,28 +62,26 @@ export default function ActivitiesSection() {
         <h2 className="text-4xl font-bold text-pbgreen">Activities</h2>
       </FadeIn>
 
-      <div className="max-w-8xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="max-w-8xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {activities.map(({ title, tag, img, description }, i) => (
           <FadeIn key={i} delay={(i % 3) * 0.1} className="h-full">
-            <div className="relative z-10 h-full bg-pbdarkgray bg-cover bg-center rounded-b-[16px] rounded-t-[54px] overflow-hidden border border-white/16 flex flex-col transition-all duration-300 hover:border-pbgreen">
-              <div className="relative h-72 overflow-hidden m-7 mb-3.1 rounded-b-[12px] rounded-t-[30px]">
-                <Image
-                  src={img}
-                  alt={title}
-                  className="w-full h-full object-cover"
-                  draggable={false}
-                />
+            <div className="inline-flex w-full h-full flex-col justify-start items-center gap-10 p-6 bg-[#1C1C1C] rounded-t-[54px] rounded-b-[16px] [outline:1px_solid_#262626] [outline-offset:-1px] transition-all duration-300">
+              <div className="self-stretch h-[277px] overflow-hidden rounded-t-[30px] rounded-b-[12px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
+                <Image src={img} alt={title} className="w-full h-full object-cover" draggable={false} />
               </div>
-              <div className="flex flex-col gap-2 flex-1 p-5 pt-1 pl-11">
-                <div className="flex mb-3 mt-2 items-center gap-2 flex-wrap">
-                  <h3 className="font-bold text-white text-base">{title}</h3>
-                  <span className="text-pbgreen h-7 flex items-center text-xs border-2 border-pbborder p-2 rounded-2xl">
-                    {tag}
-                  </span>
+
+              <div className="self-stretch px-6 flex flex-col items-center gap-6">
+                <div className="self-stretch flex items-start justify-between gap-3">
+                  <h3 className="text-white text-[20px] leading-[30px] font-lexend font-[400] break-words">{title}</h3>
+
+                  <div className="flex items-start">
+                    <div className="bg-[#1A1A1A] rounded-full px-4 py-1.5 [outline:1px_solid_#262626] [outline-offset:-1px] flex items-center justify-center">
+                      <div className="text-pbgreen text-[16px] leading-[24px] font-lexend font-[300]">{tag}</div>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-white/70 text-sm leading-relaxed ">
-                  {description}
-                </p>
+
+                <p className="self-stretch text-[#B3B3B3] text-[16px] leading-[24px] font-lexend font-[300] break-words">{description}</p>
               </div>
             </div>
           </FadeIn>
