@@ -17,49 +17,98 @@ export default function OssHighlightsSection({
   organizationStats: OrganizationView[];
   onTabChange: (tab: DashboardTab) => void;
 }) {
+  const topOrganizations = organizationStats.slice(0, 5);
+  const topContributors = contributorStats.slice(0, 5);
+  const desktopRowCount = Math.max(
+    topOrganizations.length,
+    topContributors.length,
+    1,
+  );
+
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
-      <div>
-        <OssSectionHeader
-          title="Top Organizations"
-          onViewAll={() => onTabChange("organizations")}
-        />
-        <div className="space-y-3">
-          {organizationStats.length === 0 ? (
-            <OssEmptyState message="No organizations yet." />
-          ) : (
-            organizationStats
-              .slice(0, 5)
-              .map((organization) => (
+    <>
+      <div className="space-y-8 md:hidden">
+        <div>
+          <OssSectionHeader
+            title="Top Organizations"
+            onViewAll={() => onTabChange("organizations")}
+          />
+          <div className="space-y-3">
+            {topOrganizations.length === 0 ? (
+              <OssEmptyState message="No organizations yet." />
+            ) : (
+              topOrganizations.map((organization) => (
                 <OssOrganizationPreviewCard
                   key={organization.id}
                   organization={organization}
                 />
               ))
-          )}
+            )}
+          </div>
         </div>
-      </div>
 
-      <div>
-        <OssSectionHeader
-          title="Top Contributors"
-          onViewAll={() => onTabChange("contributors")}
-        />
-        <div className="space-y-3">
-          {contributorStats.length === 0 ? (
-            <OssEmptyState message="No contributors yet." />
-          ) : (
-            contributorStats
-              .slice(0, 5)
-              .map((contributor) => (
+        <div>
+          <OssSectionHeader
+            title="Top Contributors"
+            onViewAll={() => onTabChange("contributors")}
+          />
+          <div className="space-y-3">
+            {topContributors.length === 0 ? (
+              <OssEmptyState message="No contributors yet." />
+            ) : (
+              topContributors.map((contributor) => (
                 <OssContributorPreviewCard
                   key={contributor.id}
                   contributor={contributor}
                 />
               ))
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      <div className="hidden md:block">
+        <div className="grid grid-cols-2 gap-8">
+          <OssSectionHeader
+            title="Top Organizations"
+            onViewAll={() => onTabChange("organizations")}
+          />
+          <OssSectionHeader
+            title="Top Contributors"
+            onViewAll={() => onTabChange("contributors")}
+          />
+        </div>
+
+        <div className="mt-6 space-y-3">
+          {Array.from({ length: desktopRowCount }, (_, index) => {
+            const organization = topOrganizations[index];
+            const contributor = topContributors[index];
+
+            return (
+              <div
+                key={`${organization?.id ?? "org-empty"}-${contributor?.id ?? "contributor-empty"}-${index}`}
+                className="grid grid-cols-2 gap-8 items-stretch"
+              >
+                <div className="[&>div]:h-full">
+                  {organization ? (
+                    <OssOrganizationPreviewCard organization={organization} />
+                  ) : topOrganizations.length === 0 && index === 0 ? (
+                    <OssEmptyState message="No organizations yet." />
+                  ) : null}
+                </div>
+
+                <div className="[&>div]:h-full">
+                  {contributor ? (
+                    <OssContributorPreviewCard contributor={contributor} />
+                  ) : topContributors.length === 0 && index === 0 ? (
+                    <OssEmptyState message="No contributors yet." />
+                  ) : null}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </>
   );
 }
